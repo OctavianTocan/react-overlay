@@ -3,14 +3,14 @@
  * @description Reusable modal wrapper with overlay, animations, and keyboard handling.
  */
 
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { useBodyScrollLock } from '../hooks';
-import { cn } from '../utils';
-import { DismissButton } from './DismissButton';
-import type { ModalWrapperProps } from './types';
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { useBodyScrollLock } from "../hooks";
+import { cn } from "../utils";
+import { DismissButton } from "./DismissButton";
+import type { ModalWrapperProps } from "./types";
 
 /**
  * ModalWrapper Component
@@ -43,9 +43,10 @@ export function ModalWrapper({
   overlayClassName,
   closeOnOverlayClick = true,
   closeOnEscape = true,
-  testId = 'modal-overlay',
+  testId = "modal-overlay",
   showDismissButton = false,
   dismissButtonProps,
+  scrollable = true,
   ariaLabelledBy,
   ariaDescribedBy,
   ariaLabel,
@@ -64,16 +65,16 @@ export function ModalWrapper({
     if (!resolvedOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (closeOnEscape && event.key === 'Escape') {
+      if (closeOnEscape && event.key === "Escape") {
         event.preventDefault();
         resolvedOnDismiss();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [resolvedOpen, resolvedOnDismiss, closeOnEscape]);
 
@@ -107,8 +108,8 @@ export function ModalWrapper({
         <motion.div
           key="modal-overlay"
           className={cn(
-            'fixed inset-0 w-screen bg-black/50 flex items-center justify-center z-[1000] cursor-default',
-            overlayClassName
+            "fixed inset-0 w-screen bg-black/50 flex items-center justify-center z-[1000] cursor-default",
+            overlayClassName,
           )}
           data-testid={testId}
           {...overlayAnimation}
@@ -121,10 +122,11 @@ export function ModalWrapper({
           aria-label={ariaLabel}
         >
           <motion.div
-            className={cn('relative', contentClassName)}
+            className={cn("relative", contentClassName)}
             {...contentAnimation}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             onClick={(e) => e.stopPropagation()}
+            {...(scrollable ? { "data-ro-scroll": true } : {})}
           >
             {showDismissButton && (
               <DismissButton

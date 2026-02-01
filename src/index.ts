@@ -44,7 +44,7 @@
  */
 
 // BottomSheet feature
-export { BottomSheet, COLORS, DURATION, RADIUS, SPACING, SPRING } from './bottom-sheet';
+export { BottomSheet, COLORS, DURATION, RADIUS, SPACING, SPRING } from "./bottom-sheet";
 
 export type {
   BottomSheetProps,
@@ -57,10 +57,10 @@ export type {
   SnapToOptions,
   SpringEvent,
   SpringEventType,
-} from './bottom-sheet';
+} from "./bottom-sheet";
 
 // Modal feature
-export { Modal, ModalWrapper, ModalHeader, ModalDescription, DismissButton } from './modal';
+export { Modal, ModalWrapper, ModalHeader, ModalDescription, DismissButton } from "./modal";
 
 export type {
   ModalProps,
@@ -70,13 +70,16 @@ export type {
   ModalDescriptionProps,
   DismissButtonProps,
   DismissButtonVariant,
-} from './modal';
+} from "./modal";
 
 // Shared hooks
-export { useBodyScrollLock, lockBodyScroll, unlockBodyScroll } from './hooks';
+export { useBodyScrollLock, lockBodyScroll, unlockBodyScroll } from "./hooks";
 
 // Shared utilities
-export { cn } from './utils';
+export { cn } from "./utils";
 
 // Shared types
-export type { OverlayBaseProps } from './types';
+export type { OverlayBaseProps } from "./types";
+
+// Scrollbar styling - data attribute for applying custom scrollbar styles
+export const SCROLLBAR_DATA_ATTRIBUTE = "data-ro-scroll" as const;

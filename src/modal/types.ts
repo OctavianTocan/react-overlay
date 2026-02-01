@@ -2,8 +2,8 @@
  * @fileoverview Type definitions for Modal components.
  */
 
-import type { ReactNode } from 'react';
-import type { DismissButtonProps } from './DismissButton';
+import type { ReactNode } from "react";
+import type { DismissButtonProps } from "./DismissButton";
 
 /**
  * Props for the low-level ModalWrapper component.
@@ -35,7 +35,9 @@ export interface ModalWrapperProps {
   /** Whether to show the standard dismiss (X) button. Default: false */
   showDismissButton?: boolean;
   /** Props to pass to the dismiss button */
-  dismissButtonProps?: Omit<DismissButtonProps, 'onClick'>;
+  dismissButtonProps?: Omit<DismissButtonProps, "onClick">;
+  /** Whether to apply scrollbar styling to content. Default: true */
+  scrollable?: boolean;
   /** ID of element that labels the modal (for aria-labelledby) */
   ariaLabelledBy?: string;
   /** ID of element that describes the modal (for aria-describedby) */
@@ -45,14 +47,14 @@ export interface ModalWrapperProps {
 }
 
 /** Modal size presets */
-export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
 
 /**
  * Props for the high-level Modal component.
  *
  * Supports both new API (open/onDismiss) and legacy API (isOpen/onClose).
  */
-export interface ModalProps extends Omit<ModalWrapperProps, 'contentClassName'> {
+export interface ModalProps extends Omit<ModalWrapperProps, "contentClassName"> {
   /** Modal size preset. Default: 'md' */
   size?: ModalSize;
   /** Custom class for the content container */

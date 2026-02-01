@@ -1,0 +1,1 @@
+import{r as n}from"./index-BWu4c2F4.js";let o=0,e=null;function t(){typeof window>"u"||(o+=1,!(o>1)&&(e=document.body.style.overflow,document.body.style.overflow="hidden"))}function l(){typeof window>"u"||o!==0&&(o-=1,!(o>0)&&(document.body.style.overflow=e??"",e=null))}function f(r){n.useEffect(()=>{if(r)return t(),()=>{l()}},[r])}export{f as u};

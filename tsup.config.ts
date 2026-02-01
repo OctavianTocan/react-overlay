@@ -7,5 +7,5 @@ export default defineConfig({
   splitting: false,
   clean: true,
   treeshake: true,
-  external: ['react', 'react-native', 'react-native-web', 'react-dom'],
+  external: ['react', 'react-dom', 'motion', 'clsx', 'tailwind-merge', 'lucide-react'],
 });

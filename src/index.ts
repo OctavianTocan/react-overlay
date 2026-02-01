@@ -1,60 +1,51 @@
 /**
- * @fileoverview @twinmind/bottom-sheet - Custom bottom sheet component
+ * @fileoverview @octavian-tocan/react-overlay - Unified overlay components
  *
- * A draggable bottom sheet modal with snap points, inspired by react-spring-bottom-sheet.
+ * A package providing BottomSheet and Modal components with consistent APIs.
  *
  * | Export | Description |
  * |--------|-------------|
- * | BottomSheet | Main component |
- * | BottomSheetRef | Ref type for programmatic control |
- * | BottomSheetProps | Props interface |
- * | SnapPointMeasurements | Measurements available to snap point callbacks |
- * | SnapPointState | Extended state for defaultSnap and snapTo callbacks |
+ * | BottomSheet | Draggable bottom sheet with snap points |
+ * | Modal | Centered modal dialog with size presets |
+ * | ModalWrapper | Low-level modal with full customization |
+ * | ModalHeader | Header with icon badge and title |
+ * | ModalDescription | Styled description text |
+ * | DismissButton | Close button for overlays |
+ * | useBodyScrollLock | Hook to lock body scroll |
  *
- * @example Basic usage
+ * @example BottomSheet usage
  * ```tsx
- * import { BottomSheet, type BottomSheetRef } from '@twinmind/bottom-sheet';
+ * import { BottomSheet } from '@octavian-tocan/react-overlay';
  *
  * function App() {
  *   const [open, setOpen] = useState(false);
- *
  *   return (
  *     <BottomSheet open={open} onDismiss={() => setOpen(false)}>
- *       <p>Sheet content here</p>
+ *       <p>Sheet content</p>
  *     </BottomSheet>
  *   );
  * }
  * ```
  *
- * @example With snap points
+ * @example Modal usage
  * ```tsx
- * import { useRef } from 'react';
- * import { BottomSheet, type BottomSheetRef } from '@twinmind/bottom-sheet';
+ * import { Modal, ModalHeader, ModalDescription } from '@octavian-tocan/react-overlay';
  *
  * function App() {
- *   const ref = useRef<BottomSheetRef>(null);
- *
+ *   const [open, setOpen] = useState(false);
  *   return (
- *     <BottomSheet
- *       ref={ref}
- *       open={true}
- *       onDismiss={() => {}}
- *       snapPoints={({ maxHeight }) => [200, maxHeight * 0.5, maxHeight * 0.9]}
- *       defaultSnap={({ snapPoints }) => snapPoints[1]}
- *     >
- *       <button onClick={() => ref.current?.snapTo(200)}>
- *         Snap to 200px
- *       </button>
- *     </BottomSheet>
+ *     <Modal open={open} onDismiss={() => setOpen(false)} size="md">
+ *       <ModalHeader icon={<AlertIcon />} title="Confirm" />
+ *       <ModalDescription>Are you sure?</ModalDescription>
+ *     </Modal>
  *   );
  * }
  * ```
  */
 
-// Component
-export { BottomSheet } from './BottomSheet';
+// BottomSheet feature
+export { BottomSheet, COLORS, DURATION, RADIUS, SPACING, SPRING } from './bottom-sheet';
 
-// Types
 export type {
   BottomSheetProps,
   BottomSheetRef,
@@ -66,10 +57,26 @@ export type {
   SnapToOptions,
   SpringEvent,
   SpringEventType,
-} from './types';
+} from './bottom-sheet';
 
-// Hooks (for advanced use cases)
-export { useBodyScrollLock } from './useBodyScrollLock';
+// Modal feature
+export { Modal, ModalWrapper, ModalHeader, ModalDescription, DismissButton } from './modal';
 
-// Constants (for customization)
-export { COLORS, DURATION, RADIUS, SPACING, SPRING } from './constants';
+export type {
+  ModalProps,
+  ModalWrapperProps,
+  ModalSize,
+  ModalHeaderProps,
+  ModalDescriptionProps,
+  DismissButtonProps,
+  DismissButtonVariant,
+} from './modal';
+
+// Shared hooks
+export { useBodyScrollLock, lockBodyScroll, unlockBodyScroll } from './hooks';
+
+// Shared utilities
+export { cn } from './utils';
+
+// Shared types
+export type { OverlayBaseProps } from './types';

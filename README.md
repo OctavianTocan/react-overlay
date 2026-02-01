@@ -1,124 +1,199 @@
-# @twinmind/bottom-sheet
+# @octavian-tocan/react-overlay
 
-A custom draggable bottom sheet component with snap points, inspired by [react-spring-bottom-sheet](https://github.com/stipsan/react-spring-bottom-sheet).
+Unified overlay components for React: BottomSheet with snap points and Modal with animations.
 
-## Features
-
-- **Snap Points**: Define multiple heights the sheet can snap to
-- **Drag to Dismiss**: Swipe down to close the sheet
-- **Spring Animations**: Smooth, physics-based animations
-- **Sticky Header/Footer**: Keep actions visible while scrolling
-- **Keyboard Support**: Escape key dismisses (when blocking)
-- **Programmatic Control**: Use ref to snap to positions
-- **Cross-Platform**: Works on React Native and React Native Web
+[![npm version](https://img.shields.io/npm/v/@octavian-tocan/react-overlay.svg)](https://www.npmjs.com/package/@octavian-tocan/react-overlay)
+[![license](https://img.shields.io/npm/l/@octavian-tocan/react-overlay.svg)](https://github.com/OctavianTocan/react-overlay/blob/main/LICENSE)
 
 ## Installation
 
 ```bash
-pnpm add @twinmind/bottom-sheet
+npm install @octavian-tocan/react-overlay
+# or
+pnpm add @octavian-tocan/react-overlay
+# or
+yarn add @octavian-tocan/react-overlay
 ```
 
-## Usage
+### Peer Dependencies
 
-### Basic
+```bash
+npm install react react-dom motion clsx tailwind-merge
+# Optional: lucide-react (for DismissButton icon)
+npm install lucide-react
+```
+
+## Components
+
+### BottomSheet
+
+A draggable bottom sheet with snap points, spring animations, and swipe-to-dismiss.
 
 ```tsx
-import { useState } from 'react';
-import { BottomSheet } from '@twinmind/bottom-sheet';
+import { BottomSheet } from '@octavian-tocan/react-overlay';
 
 function App() {
   const [open, setOpen] = useState(false);
 
   return (
-    <>
-      <button onClick={() => setOpen(true)}>Open Sheet</button>
-      <BottomSheet open={open} onDismiss={() => setOpen(false)}>
-        <p>Sheet content here</p>
-      </BottomSheet>
-    </>
-  );
-}
-```
-
-### With Snap Points
-
-```tsx
-import { useRef, useState } from 'react';
-import { BottomSheet, type BottomSheetRef } from '@twinmind/bottom-sheet';
-
-function App() {
-  const [open, setOpen] = useState(true);
-  const ref = useRef<BottomSheetRef>(null);
-
-  return (
     <BottomSheet
-      ref={ref}
       open={open}
       onDismiss={() => setOpen(false)}
       snapPoints={({ maxHeight }) => [200, maxHeight * 0.5, maxHeight * 0.9]}
-      defaultSnap={({ snapPoints }) => snapPoints[1]}
     >
-      <button onClick={() => ref.current?.snapTo(200)}>Small</button>
-      <button onClick={() => ref.current?.snapTo(({ maxHeight }) => maxHeight * 0.5)}>
-        Medium
-      </button>
-      <button onClick={() => ref.current?.snapTo(({ maxHeight }) => maxHeight * 0.9)}>
-        Large
-      </button>
+      <p>Sheet content here</p>
     </BottomSheet>
   );
 }
 ```
 
-### With Header and Footer
+#### BottomSheet Props
+
+| Prop            | Type                   | Default      | Description                    |
+| --------------- | ---------------------- | ------------ | ------------------------------ |
+| `open`          | `boolean`              | required     | Whether the sheet is open      |
+| `onDismiss`     | `() => void`           | required     | Called when sheet is dismissed |
+| `children`      | `ReactNode`            | required     | Content to render              |
+| `snapPoints`    | `number[] \| Function` | `[40%, 85%]` | Snap points for the sheet      |
+| `defaultSnap`   | `number \| Function`   | last point   | Initial snap point             |
+| `header`        | `ReactNode`            | -            | Sticky header content          |
+| `footer`        | `ReactNode`            | -            | Sticky footer content          |
+| `scrollLocking` | `boolean`              | `true`       | Lock body scroll when open     |
+| `testId`        | `string`               | -            | Test ID for testing            |
+
+### Modal
+
+A centered modal dialog with size presets and Motion animations.
 
 ```tsx
-<BottomSheet
-  open={open}
-  onDismiss={() => setOpen(false)}
-  header={<h2>Edit Profile</h2>}
-  footer={
-    <div>
-      <button onClick={() => setOpen(false)}>Cancel</button>
-      <button onClick={handleSave}>Save</button>
-    </div>
-  }
->
-  <form>{/* Form fields */}</form>
-</BottomSheet>
+import { Modal, ModalHeader, ModalDescription } from '@octavian-tocan/react-overlay';
+import { AlertCircle } from 'lucide-react';
+
+function App() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Modal open={open} onDismiss={() => setOpen(false)} size="md">
+      <ModalHeader icon={<AlertCircle className="w-4 h-4 text-white" />} title="Confirm Action" />
+      <ModalDescription>Are you sure you want to proceed?</ModalDescription>
+      {/* Your content */}
+    </Modal>
+  );
+}
 ```
 
-## Props
+#### Modal Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `open` | `boolean` | required | Whether the sheet is open |
-| `onDismiss` | `() => void` | - | Called when dismissed (backdrop tap, swipe, escape) |
-| `children` | `ReactNode` | required | Content to render inside the sheet |
-| `snapPoints` | `number[] \| Function` | - | Snap point heights or function |
-| `defaultSnap` | `number \| Function` | - | Initial snap point |
-| `header` | `ReactNode` | - | Sticky header content |
-| `footer` | `ReactNode` | - | Sticky footer content |
-| `title` | `string` | - | *(deprecated)* Use `header` instead |
-| `sibling` | `ReactNode` | - | Content rendered outside the overlay |
-| `blocking` | `boolean` | `true` | Enable focus trap and escape key |
-| `scrollLocking` | `boolean` | `true` | Lock body scroll when open |
-| `expandOnContentDrag` | `boolean` | `false` | Allow dragging from content area |
-| `skipInitialTransition` | `boolean` | `false` | Skip opening animation |
-| `maxHeight` | `number` | - | Maximum height constraint |
-| `onSpringStart` | `(event) => void` | - | Called when animation starts |
-| `onSpringEnd` | `(event) => void` | - | Called when animation ends |
-| `testID` | `string` | - | Test ID for testing |
+| Prop                  | Type                                     | Default  | Description                    |
+| --------------------- | ---------------------------------------- | -------- | ------------------------------ |
+| `open`                | `boolean`                                | required | Whether the modal is open      |
+| `onDismiss`           | `() => void`                             | required | Called when modal is dismissed |
+| `children`            | `ReactNode`                              | required | Content to render              |
+| `size`                | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `'md'`   | Size preset                    |
+| `padding`             | `boolean`                                | `true`   | Add default padding            |
+| `closeOnOverlayClick` | `boolean`                                | `true`   | Close on backdrop click        |
+| `closeOnEscape`       | `boolean`                                | `true`   | Close on Escape key            |
+| `showDismissButton`   | `boolean`                                | `true`   | Show X button                  |
+| `testId`              | `string`                                 | -        | Test ID for testing            |
 
-## Ref Methods
+### ModalWrapper
+
+Low-level modal component for full customization.
 
 ```tsx
-interface BottomSheetRef {
-  snapTo: (height: number | ((state) => number), options?) => void;
-  height: number; // Current height
+import { ModalWrapper } from '@octavian-tocan/react-overlay';
+
+<ModalWrapper
+  open={isOpen}
+  onDismiss={handleClose}
+  contentClassName="bg-white rounded-xl p-8 max-w-lg"
+  showDismissButton
+>
+  {children}
+</ModalWrapper>;
+```
+
+### Helper Components
+
+#### ModalHeader
+
+Header with icon badge and title.
+
+```tsx
+import { ModalHeader } from '@octavian-tocan/react-overlay';
+import { AlertCircle } from 'lucide-react';
+
+<ModalHeader icon={<AlertCircle className="w-4 h-4 text-white" />} title="Confirm Delete" />;
+```
+
+#### ModalDescription
+
+Styled description text.
+
+```tsx
+import { ModalDescription } from '@octavian-tocan/react-overlay';
+
+<ModalDescription>This action cannot be undone.</ModalDescription>;
+```
+
+#### DismissButton
+
+Close button for overlays.
+
+```tsx
+import { DismissButton } from '@octavian-tocan/react-overlay';
+
+<DismissButton
+  onClick={handleClose}
+  variant="default" // or "subtle"
+  position="absolute top-3 right-3"
+/>;
+```
+
+## Hooks
+
+### useBodyScrollLock
+
+Lock body scroll when an overlay is open. Supports multiple concurrent overlays via ref-counting.
+
+```tsx
+import { useBodyScrollLock } from '@octavian-tocan/react-overlay';
+
+function MyOverlay({ isOpen }) {
+  useBodyScrollLock(isOpen);
+  return isOpen ? <div>Overlay content</div> : null;
 }
+```
+
+## Utilities
+
+### cn
+
+Class name utility (clsx + tailwind-merge) for conditional classes.
+
+```tsx
+import { cn } from '@octavian-tocan/react-overlay';
+
+<div className={cn('base-class', isActive && 'active-class', className)} />;
+```
+
+## TypeScript
+
+Full TypeScript support with exported types:
+
+```tsx
+import type {
+  BottomSheetProps,
+  BottomSheetRef,
+  ModalProps,
+  ModalWrapperProps,
+  ModalSize,
+  ModalHeaderProps,
+  ModalDescriptionProps,
+  DismissButtonProps,
+} from '@octavian-tocan/react-overlay';
 ```
 
 ## License
 
-MIT
+MIT © [Octavian Tocan](https://github.com/OctavianTocan)

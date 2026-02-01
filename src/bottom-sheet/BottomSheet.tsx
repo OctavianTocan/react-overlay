@@ -4,26 +4,8 @@
  * a draggable bottom sheet with snap points, spring animations, and keyboard support.
  */
 
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Animated,
-  Easing,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import type { GestureResponderEvent, ViewStyle } from 'react-native';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   ANIMATION_DURATION_MS,
@@ -36,13 +18,8 @@ import {
   SPRING,
   VELOCITY_THRESHOLD,
 } from './constants';
-import type {
-  BottomSheetProps,
-  BottomSheetRef,
-  SnapPointMeasurements,
-  SnapPointState,
-} from './types';
-import { useBodyScrollLock } from './useBodyScrollLock';
+import type { BottomSheetProps, BottomSheetRef, SnapPointMeasurements, SnapPointState } from './types';
+import { useBodyScrollLock } from '../hooks';
 
 // ============================================================================
 // Helper functions
@@ -59,11 +36,7 @@ function findClosestSnapPoint(height: number, snapPoints: number[]): number {
   );
 }
 
-function findSnapPointInDirection(
-  currentHeight: number,
-  velocity: number,
-  snapPoints: number[]
-): number {
+function findSnapPointInDirection(currentHeight: number, velocity: number, snapPoints: number[]): number {
   if (snapPoints.length === 0) return currentHeight;
   const sorted = [...snapPoints].sort((a, b) => a - b);
 
@@ -80,12 +53,6 @@ function findSnapPointInDirection(
   }
   return sorted[sorted.length - 1]!;
 }
-
-// ============================================================================
-// AnimatedView (inline to avoid external dependency)
-// ============================================================================
-
-const AnimatedView = Animated.View;
 
 // ============================================================================
 // BottomSheetContent (internal)
@@ -117,14 +84,19 @@ function BottomSheetContent({
   onSpringStart,
   onSpringEnd,
   onSpringCancel,
+  testId,
   testID,
   sheetRef,
 }: BottomSheetContentProps): React.JSX.Element | null {
+  // Support both testId (new) and testID (deprecated) with testId taking precedence
+  const resolvedTestId = testId ?? testID;
   // ========== State ==========
   const [isVisible, setIsVisible] = useState(false);
-  const [windowHeight, setWindowHeight] = useState(
-    typeof window !== 'undefined' ? window.innerHeight : 800
-  );
+  const [windowHeight, setWindowHeight] = useState(typeof window !== 'undefined' ? window.innerHeight : 800);
+  const [sheetHeight, setSheetHeight] = useState(0);
+  const [backdropOpacity, setBackdropOpacity] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDuration, setTransitionDuration] = useState<number | null>(null);
 
   // ========== Refs ==========
   const currentHeightRef = useRef<number>(0);
@@ -135,10 +107,10 @@ function BottomSheetContent({
   const dragStartTimeRef = useRef(0);
   // Initialize to false so first mount with open=true triggers visibility
   const prevOpenRef = useRef(false);
-
-  // ========== Animated Values ==========
-  const heightAnim = useRef(new Animated.Value(0)).current;
-  const backdropAnim = useRef(new Animated.Value(0)).current;
+  const sheetElementRef = useRef<HTMLDivElement>(null);
+  const backdropElementRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ========== Computed Values ==========
   const maxH = maxHeightProp ?? windowHeight * 0.9;
@@ -197,29 +169,59 @@ function BottomSheetContent({
   }, [onDismiss, onClose]);
 
   // ========== Animation Helpers ==========
+  const setHeightImmediate = useCallback((height: number) => {
+    currentHeightRef.current = height;
+    // Disable transition immediately via DOM to avoid React batching issues
+    if (sheetElementRef.current) {
+      sheetElementRef.current.style.transition = 'none';
+    }
+    setTransitionDuration(null);
+    setSheetHeight(height);
+  }, []);
+
+  const setHeightWithTransition = useCallback((height: number, duration: number = ANIMATION_DURATION_MS) => {
+    currentHeightRef.current = height;
+    setTransitionDuration(duration);
+    setSheetHeight(height);
+    // Ensure transition is applied after state update
+    requestAnimationFrame(() => {
+      if (sheetElementRef.current) {
+        sheetElementRef.current.style.transition = `height ${duration}ms cubic-bezier(0.4, 0.0, 0.2, 1)`;
+      }
+    });
+  }, []);
+
+  const setBackdropOpacityImmediate = useCallback((opacity: number) => {
+    setBackdropOpacity(opacity);
+  }, []);
+
+  const setBackdropOpacityWithTransition = useCallback((opacity: number, _duration: number = ANIMATION_DURATION_MS) => {
+    setBackdropOpacity(opacity);
+  }, []);
+
   const animateToHeight = useCallback(
     (toHeight: number, source: 'dragging' | 'custom' = 'custom') => {
-      const clampedHeight = clamp(
-        toHeight,
-        snapPoints[0] ?? 100,
-        snapPoints[snapPoints.length - 1] ?? maxH
-      );
+      const clampedHeight = clamp(toHeight, snapPoints[0] ?? 100, snapPoints[snapPoints.length - 1] ?? maxH);
 
       lastSnapRef.current = currentHeightRef.current;
       currentHeightRef.current = clampedHeight;
 
       onSpringStart?.({ type: 'SNAP', source });
 
-      Animated.spring(heightAnim, {
-        toValue: clampedHeight,
-        useNativeDriver: false,
-        tension: SPRING.snappy.stiffness,
-        friction: SPRING.snappy.damping,
-      }).start((() => {
+      setIsTransitioning(true);
+      // Use spring-like timing for snappy feel
+      const springDuration = Math.max(200, Math.abs(clampedHeight - currentHeightRef.current) * 0.5);
+      setHeightWithTransition(clampedHeight, springDuration);
+
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+      }
+      transitionTimeoutRef.current = setTimeout(() => {
+        setIsTransitioning(false);
         onSpringEnd?.({ type: 'SNAP', source });
-      }) as () => void);
+      }, springDuration);
     },
-    [snapPoints, maxH, heightAnim, onSpringStart, onSpringEnd]
+    [snapPoints, maxH, onSpringStart, onSpringEnd, setHeightWithTransition]
   );
 
   const animateOpen = useCallback(() => {
@@ -227,76 +229,71 @@ function BottomSheetContent({
     currentHeightRef.current = targetHeight;
 
     if (skipInitialTransition) {
-      heightAnim.setValue(targetHeight);
-      backdropAnim.setValue(1);
+      setHeightImmediate(targetHeight);
+      setBackdropOpacityImmediate(1);
       onSpringEnd?.({ type: 'OPEN' });
       return;
     }
 
     onSpringStart?.({ type: 'OPEN' });
 
-    heightAnim.setValue(0);
-    backdropAnim.setValue(0);
+    setHeightImmediate(0);
+    setBackdropOpacityImmediate(0);
 
-    Animated.parallel([
-      Animated.spring(heightAnim, {
-        toValue: targetHeight,
-        useNativeDriver: false,
-        tension: SPRING.gentle.stiffness,
-        friction: SPRING.gentle.damping,
-      }),
-      Animated.timing(backdropAnim, {
-        toValue: 1,
-        duration: ANIMATION_DURATION_MS,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: false,
-      }),
-    ]).start((() => {
-      onSpringEnd?.({ type: 'OPEN' });
-      if (
-        Platform.OS === 'web' &&
-        blocking &&
-        initialFocusRef !== false &&
-        initialFocusRef?.current
-      ) {
-        initialFocusRef.current.focus();
+    // Trigger transition after a frame to ensure initial values are set
+    requestAnimationFrame(() => {
+      setIsTransitioning(true);
+      // Use spring-like timing for opening
+      const springDuration = Math.max(300, targetHeight * 0.3);
+      setHeightWithTransition(targetHeight, springDuration);
+      setBackdropOpacityWithTransition(1, ANIMATION_DURATION_MS);
+
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
       }
-    }) as () => void);
+      transitionTimeoutRef.current = setTimeout(
+        () => {
+          setIsTransitioning(false);
+          onSpringEnd?.({ type: 'OPEN' });
+          if (blocking && initialFocusRef !== false && initialFocusRef?.current) {
+            initialFocusRef.current.focus();
+          }
+        },
+        Math.max(springDuration, ANIMATION_DURATION_MS)
+      );
+    });
   }, [
     defaultSnapHeight,
     skipInitialTransition,
-    heightAnim,
-    backdropAnim,
     onSpringStart,
     onSpringEnd,
     blocking,
     initialFocusRef,
+    setHeightImmediate,
+    setBackdropOpacityImmediate,
+    setHeightWithTransition,
+    setBackdropOpacityWithTransition,
   ]);
 
   const animateClose = useCallback(
     (source: 'dragging' | 'custom' = 'custom') => {
       onSpringStart?.({ type: 'CLOSE', source });
 
-      Animated.parallel([
-        Animated.timing(heightAnim, {
-          toValue: 0,
-          duration: ANIMATION_DURATION_MS,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: false,
-        }),
-        Animated.timing(backdropAnim, {
-          toValue: 0,
-          duration: ANIMATION_DURATION_MS,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: false,
-        }),
-      ]).start((() => {
+      setIsTransitioning(true);
+      setHeightWithTransition(0, ANIMATION_DURATION_MS);
+      setBackdropOpacityWithTransition(0, ANIMATION_DURATION_MS);
+
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+      }
+      transitionTimeoutRef.current = setTimeout(() => {
+        setIsTransitioning(false);
         onSpringEnd?.({ type: 'CLOSE', source });
         setIsVisible(false);
         handleDismiss();
-      }) as () => void);
+      }, ANIMATION_DURATION_MS);
     },
-    [heightAnim, backdropAnim, onSpringStart, onSpringEnd, handleDismiss]
+    [onSpringStart, onSpringEnd, handleDismiss, setHeightWithTransition, setBackdropOpacityWithTransition]
   );
 
   // ========== Imperative Handle ==========
@@ -329,6 +326,12 @@ function BottomSheetContent({
     dragStartYRef.current = y;
     dragStartHeightRef.current = currentHeightRef.current;
     dragStartTimeRef.current = Date.now();
+    setIsTransitioning(false);
+    // Disable transitions during drag - use ref to ensure it happens immediately
+    if (sheetElementRef.current) {
+      sheetElementRef.current.style.transition = 'none';
+    }
+    setTransitionDuration(null);
   }, []);
 
   const handleDragMove = useCallback(
@@ -336,16 +339,11 @@ function BottomSheetContent({
       if (!isDraggingRef.current) return;
 
       const deltaY = dragStartYRef.current - y;
-      const newHeight = clamp(
-        dragStartHeightRef.current + deltaY,
-        50,
-        maxH + 50
-      );
+      const newHeight = clamp(dragStartHeightRef.current + deltaY, 50, maxH + 50);
 
-      heightAnim.setValue(newHeight);
-      currentHeightRef.current = newHeight;
+      setHeightImmediate(newHeight);
     },
-    [heightAnim, maxH]
+    [maxH, setHeightImmediate]
   );
 
   const handleDragEnd = useCallback(
@@ -381,19 +379,16 @@ function BottomSheetContent({
     [snapPoints, animateClose, animateToHeight]
   );
 
-  // ========== Touch Event Handlers (Web) ==========
+  // ========== Touch Event Handlers ==========
   useEffect(() => {
-    if (Platform.OS !== 'web' || !isVisible) return;
+    if (!isVisible) return;
 
     const handleTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
       if (!touch) return;
 
       const target = e.target as HTMLElement;
-      if (
-        target.closest('[data-bottom-sheet-handle]') ||
-        target.closest('[data-bottom-sheet-drag-zone]')
-      ) {
+      if (target.closest('[data-bottom-sheet-handle]') || target.closest('[data-bottom-sheet-drag-zone]')) {
         handleDragStart(touch.clientY);
       } else if (expandOnContentDrag && target.closest('[data-bottom-sheet-content]')) {
         handleDragStart(touch.clientY);
@@ -426,7 +421,7 @@ function BottomSheetContent({
     };
   }, [isVisible, expandOnContentDrag, handleDragStart, handleDragMove, handleDragEnd]);
 
-  // ========== Pointer Event Handlers (Web Desktop) ==========
+  // ========== Pointer Event Handlers ==========
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       handleDragStart(e.clientY);
@@ -437,53 +432,41 @@ function BottomSheetContent({
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      handleDragMove(e.clientY);
+      if (isDraggingRef.current) {
+        handleDragMove(e.clientY);
+      }
     },
     [handleDragMove]
   );
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
-      handleDragEnd(e.clientY);
-    },
-    [handleDragEnd]
-  );
-
-  // ========== Native Gesture Handlers ==========
-  const handleResponderGrant = useCallback(
-    (e: GestureResponderEvent) => {
-      const y = e.nativeEvent.pageY;
-      handleDragStart(y);
-    },
-    [handleDragStart]
-  );
-
-  const handleResponderMove = useCallback(
-    (e: GestureResponderEvent) => {
-      const y = e.nativeEvent.pageY;
-      handleDragMove(y);
-    },
-    [handleDragMove]
-  );
-
-  const handleResponderRelease = useCallback(
-    (e: GestureResponderEvent) => {
-      const y = e.nativeEvent.pageY;
-      handleDragEnd(y);
+      if (isDraggingRef.current) {
+        handleDragEnd(e.clientY);
+      }
     },
     [handleDragEnd]
   );
 
   // ========== Open/Close Effects ==========
+  // Track if we've already animated open to prevent re-animating on dependency changes
+  const hasAnimatedOpenRef = useRef(false);
+
   useEffect(() => {
     if (open && !prevOpenRef.current) {
       setIsVisible(true);
+      hasAnimatedOpenRef.current = false; // Reset when transitioning to open
+    }
+    if (!open && prevOpenRef.current) {
+      hasAnimatedOpenRef.current = false; // Reset when closing
     }
     prevOpenRef.current = open;
   }, [open]);
 
   useEffect(() => {
-    if (isVisible && open) {
+    // Only animate open once when transitioning from closed to open
+    if (isVisible && open && !hasAnimatedOpenRef.current) {
+      hasAnimatedOpenRef.current = true;
       const timer = setTimeout(animateOpen, 16);
       return () => clearTimeout(timer);
     }
@@ -495,7 +478,7 @@ function BottomSheetContent({
 
   // ========== Keyboard Handler ==========
   useEffect(() => {
-    if (Platform.OS !== 'web' || !isVisible || !blocking) return;
+    if (!isVisible || !blocking) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -508,11 +491,33 @@ function BottomSheetContent({
   }, [isVisible, blocking, animateClose]);
 
   // ========== Window Resize ==========
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
+  // Ignore resize events caused by virtual keyboard on mobile.
+  // When an input is focused and height decreases, it's likely the keyboard appearing.
+  // We use a ref to track initial height to detect keyboard-related resizes.
+  const initialHeightRef = useRef(typeof window !== 'undefined' ? window.innerHeight : 800);
 
+  useEffect(() => {
     const handleResize = () => {
-      setWindowHeight(window.innerHeight);
+      const newHeight = window.innerHeight;
+      const activeElement = document.activeElement;
+      const isInputFocused =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement?.getAttribute('contenteditable') === 'true';
+
+      // If an input is focused and the height decreased significantly (keyboard appeared),
+      // ignore this resize to prevent the bottom sheet from re-animating.
+      // Also ignore when height increases back (keyboard dismissed) while input is still focused.
+      const heightDelta = Math.abs(newHeight - initialHeightRef.current);
+      const isKeyboardRelatedResize = isInputFocused && heightDelta > 100;
+
+      if (isKeyboardRelatedResize) {
+        return;
+      }
+
+      // Update initial height ref when not keyboard-related
+      initialHeightRef.current = newHeight;
+      setWindowHeight(newHeight);
       onSpringStart?.({ type: 'RESIZE', source: 'window' });
     };
 
@@ -521,109 +526,101 @@ function BottomSheetContent({
   }, [onSpringStart]);
 
   // ========== Body Scroll Lock ==========
-  useBodyScrollLock(Platform.OS === 'web' && isVisible && scrollLocking);
+  useBodyScrollLock(isVisible && scrollLocking);
+
+  // ========== Cleanup ==========
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // ========== Early Return ==========
   if (!isVisible) return null;
 
   // ========== Render ==========
-  const headerContent = header ?? (title ? (
-    <View style={styles.legacyHeader}>
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  ) : null);
+  const headerContent =
+    header ??
+    (title ? (
+      <div style={styles.legacyHeader}>
+        <h2 style={styles.title}>{title}</h2>
+      </div>
+    ) : null);
 
-  // Web needs fixed positioning for portal rendering
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const webFixedStyle = Platform.OS === 'web' ? ({ position: 'fixed' } as any) : {};
-  const overlayStyle: ViewStyle[] = [styles.overlay, webFixedStyle];
-
-  const rootStyle =
-    Platform.OS === 'web' && style
-      ? [...overlayStyle, style as unknown as ViewStyle]
-      : overlayStyle;
+  const overlayStyle: React.CSSProperties = {
+    ...styles.overlay,
+    position: 'fixed',
+    ...style,
+  };
 
   return (
-    <View
-      style={rootStyle}
-      testID={testID}
-      // @ts-expect-error web className
-      className={Platform.OS === 'web' ? className : undefined}
-    >
+    <div style={overlayStyle} className={className} data-testid={resolvedTestId}>
       {sibling}
 
       {/* Backdrop */}
-      <AnimatedView style={[styles.backdrop, { opacity: backdropAnim as unknown as number }]}>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={() => animateClose('custom')}
-          accessibilityRole="button"
-          accessibilityLabel={title ? `Close ${title}` : 'Close bottom sheet'}
-          testID={testID ? `${testID}-backdrop` : undefined}
+      <div
+        ref={backdropElementRef}
+        style={{
+          ...styles.backdrop,
+          opacity: backdropOpacity,
+          transition: `opacity ${ANIMATION_DURATION_MS}ms ease-out`,
+        }}
+      >
+        <button
+          type="button"
+          style={styles.backdropButton}
+          onClick={() => animateClose('custom')}
+          aria-label={title ? `Close ${title}` : 'Close bottom sheet'}
+          data-testid={resolvedTestId ? `${resolvedTestId}-backdrop` : undefined}
         />
-      </AnimatedView>
+      </div>
 
       {/* Sheet */}
-      <AnimatedView
-        style={[
-          styles.sheet,
-          {
-            height: heightAnim as unknown as number,
-            maxHeight: maxH,
-          },
-        ]}
+      <div
+        ref={sheetElementRef}
+        style={{
+          ...styles.sheet,
+          height: `${sheetHeight}px`,
+          maxHeight: `${maxH}px`,
+          transition:
+            transitionDuration !== null ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)` : 'none',
+        }}
       >
         {/* Drag Handle Zone */}
-        <View
-          style={styles.handleZone}
-          // @ts-expect-error web data attribute
-          dataSet={{ bottomSheetDragZone: true }}
-        >
-          <View
+        <div style={styles.handleZone} data-bottom-sheet-drag-zone>
+          <div
             style={styles.handleArea}
-            // @ts-expect-error web data attribute
-            dataSet={{ bottomSheetHandle: true }}
-            accessibilityRole="button"
-            accessibilityLabel={title ? `Drag handle for ${title}` : 'Drag handle'}
-            {...(Platform.OS === 'web'
-              ? {
-                  onPointerDown: handlePointerDown,
-                  onPointerMove: handlePointerMove,
-                  onPointerUp: handlePointerUp,
-                }
-              : {
-                  onStartShouldSetResponder: () => true,
-                  onMoveShouldSetResponder: () => true,
-                  onResponderGrant: handleResponderGrant,
-                  onResponderMove: handleResponderMove,
-                  onResponderRelease: handleResponderRelease,
-                })}
+            data-bottom-sheet-handle
+            role="button"
+            aria-label={title ? `Drag handle for ${title}` : 'Drag handle'}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
           >
-            <View style={styles.handle} />
-          </View>
-        </View>
+            <div style={styles.handle} />
+          </div>
+        </div>
 
         {/* Header (Sticky) */}
-        {headerContent && <View style={styles.headerContainer}>{headerContent}</View>}
+        {headerContent && <div style={styles.headerContainer}>{headerContent}</div>}
 
         {/* Scrollable Content */}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          {...({ bounces: false, dataSet: { bottomSheetContent: true } } as object)}
-        >
-          {children}
-        </ScrollView>
+        <div style={styles.scrollView} data-bottom-sheet-content>
+          <div style={styles.scrollContent}>{children}</div>
+        </div>
 
         {/* Footer (Sticky) */}
-        {footer && <View style={styles.footerContainer}>{footer}</View>}
+        {footer && <div style={styles.footerContainer}>{footer}</div>}
 
-        {/* Safe Area Spacer */}
-        <View style={styles.safeAreaSpacer} />
-      </AnimatedView>
-    </View>
+        {/* Safe Area Spacer - only render when there's no footer (footer handles its own safe area) */}
+        {!footer && <div style={styles.safeAreaSpacer} />}
+      </div>
+    </div>
   );
 }
 
@@ -631,110 +628,131 @@ function BottomSheetContent({
 // BottomSheet (exported)
 // ============================================================================
 
-export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
-  function BottomSheet(props: BottomSheetProps, ref: React.ForwardedRef<BottomSheetRef>) {
-    if (Platform.OS !== 'web') {
-      return <BottomSheetContent {...props} sheetRef={ref} />;
-    }
-
-    if (typeof document === 'undefined') {
-      return null;
-    }
-
-    type CreatePortal = typeof import('react-dom').createPortal;
-    let createPortal: CreatePortal | null = null;
-
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      createPortal = require('react-dom').createPortal as CreatePortal;
-    } catch {
-      // react-dom not available
-    }
-
-    if (!createPortal) {
-      return <BottomSheetContent {...props} sheetRef={ref} />;
-    }
-
-    return createPortal(<BottomSheetContent {...props} sheetRef={ref} />, document.body);
+export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(function BottomSheet(
+  props: BottomSheetProps,
+  ref: React.ForwardedRef<BottomSheetRef>
+) {
+  if (typeof document === 'undefined') {
+    return null;
   }
-);
+
+  return createPortal(<BottomSheetContent {...props} sheetRef={ref} />, document.body);
+});
 
 // ============================================================================
 // Styles
 // ============================================================================
 
-const styles = StyleSheet.create({
+const styles: Record<string, React.CSSProperties> = {
   overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    justifyContent: 'flex-end',
+    zIndex: 1000,
+    pointerEvents: 'auto',
+  },
+  backdrop: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: 'flex-end',
-    zIndex: 1000,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    pointerEvents: 'auto',
+    zIndex: 1,
+  },
+  backdropButton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'default',
+    padding: 0,
   },
   sheet: {
     backgroundColor: COLORS.surface.card,
-    borderTopLeftRadius: RADIUS.xl2,
-    borderTopRightRadius: RADIUS.xl2,
+    borderTopLeftRadius: `${RADIUS.xl2}px`,
+    borderTopRightRadius: `${RADIUS.xl2}px`,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 16,
+    boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.15)',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    pointerEvents: 'auto',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
   },
   handleZone: {
-    height: HANDLE_HEIGHT,
+    height: `${HANDLE_HEIGHT}px`,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    flexShrink: 0,
   },
   handleArea: {
     width: '100%',
-    height: HANDLE_HEIGHT,
+    height: `${HANDLE_HEIGHT}px`,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    // Web-only cursor style
-    ...({ cursor: 'grab' } as object),
+    cursor: 'grab',
+    flexShrink: 0,
   },
   handle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
+    width: '36px',
+    height: '4px',
+    borderRadius: '2px',
     backgroundColor: COLORS.neutral.gray300,
   },
   headerContainer: {
     flexShrink: 0,
-    paddingHorizontal: SPACING.lg,
+    paddingLeft: `${SPACING.lg}px`,
+    paddingRight: `${SPACING.lg}px`,
   },
   legacyHeader: {
-    paddingBottom: SPACING.sm,
+    paddingBottom: `${SPACING.sm}px`,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: '18px',
+    fontWeight: 600,
     color: COLORS.text.primary,
+    margin: 0,
   },
   scrollView: {
     flex: 1,
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    WebkitOverflowScrolling: 'touch',
   },
   scrollContent: {
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.md,
+    paddingLeft: `${SPACING.lg}px`,
+    paddingRight: `${SPACING.lg}px`,
+    paddingBottom: `${SPACING.md}px`,
   },
   footerContainer: {
     flexShrink: 0,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.sm,
-    paddingBottom: SPACING.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingLeft: `${SPACING.lg}px`,
+    paddingRight: `${SPACING.lg}px`,
+    paddingTop: `${SPACING.sm}px`,
+    // Use calc() to add safe area inset to base padding (footer handles its own safe area)
+    paddingBottom: `calc(${SPACING.sm}px + env(safe-area-inset-bottom, 0px))`,
+    borderTopWidth: '1px',
+    borderTopStyle: 'solid',
     borderTopColor: COLORS.border.subtle,
   },
   safeAreaSpacer: {
-    paddingBottom: SPACING.md,
+    paddingBottom: `${SPACING.md}px`,
   },
-});
+};

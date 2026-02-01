@@ -53,10 +53,7 @@ export interface SnapToOptions {
 /** Ref handle for programmatic control */
 export interface BottomSheetRef {
   /** Snap to a specific height or calculated position */
-  snapTo: (
-    to: number | ((state: SnapPointState) => number),
-    options?: SnapToOptions
-  ) => void;
+  snapTo: (to: number | ((state: SnapPointState) => number), options?: SnapToOptions) => void;
   /** Current snap point height (updated outside render cycle) */
   height: number;
 }
@@ -123,5 +120,7 @@ export interface BottomSheetProps {
 
   // Testing
   /** Test ID for testing */
+  testId?: string;
+  /** @deprecated Use testId instead */
   testID?: string;
 }

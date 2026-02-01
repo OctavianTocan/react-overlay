@@ -194,6 +194,51 @@ import type {
 } from '@octavian-tocan/react-overlay';
 ```
 
+## Custom Scrollbar Styling
+
+The package includes optional CSS for custom scrollbar styling on scrollable content.
+
+### Setup
+
+Import the CSS file once in your app entry point:
+
+```tsx
+// In your app entry (e.g., main.tsx, App.tsx)
+import '@octavian-tocan/react-overlay/styles/scrollbar.css';
+```
+
+### Customization
+
+Override CSS variables to match your theme:
+
+```css
+:root {
+  --ro-scrollbar-thumb: #6366f1;        /* Scrollbar color */
+  --ro-scrollbar-thumb-hover: #4f46e5;  /* Hover color */
+  --ro-scrollbar-width: 6px;            /* Width */
+  --ro-scrollbar-track: transparent;    /* Track color */
+}
+```
+
+### Usage
+
+- **BottomSheet**: Scrollbar styling applied automatically
+- **ModalWrapper**: Applied when `scrollable={true}` (default)
+- **Custom elements**: Add `data-ro-scroll` attribute
+
+```tsx
+<div data-ro-scroll className="overflow-auto max-h-96">
+  Scrollable content with custom styling
+</div>
+```
+
+## Documentation
+
+- [API Reference](./docs/API.md) - Complete API documentation
+- [Architecture](./docs/ARCHITECTURE.md) - Technical architecture
+- [Examples](./docs/EXAMPLES.md) - Practical code examples
+- [Migration Guide](./docs/MIGRATION.md) - Upgrading and migration
+
 ## License
 
 MIT © [Octavian Tocan](https://github.com/OctavianTocan)

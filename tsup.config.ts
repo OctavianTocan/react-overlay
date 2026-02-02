@@ -1,9 +1,15 @@
 import { defineConfig } from "tsup";
 import { copyFileSync, mkdirSync } from "fs";
-import { dirname, join } from "path";
+import { join } from "path";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: {
+    index: "src/index.ts",
+    "bottom-sheet": "src/bottom-sheet/index.ts",
+    modal: "src/modal/index.ts",
+    hooks: "src/hooks/index.ts",
+    types: "src/types/index.ts",
+  },
   format: ["esm", "cjs"],
   dts: true,
   splitting: false,

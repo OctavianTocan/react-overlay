@@ -7,11 +7,31 @@ import type { ReactNode } from "react";
 /**
  * Base props shared by all overlay components (Modal, BottomSheet).
  * Individual components extend this with their specific props.
+ *
+ * @example
+ * ```tsx
+ * interface MyOverlayProps extends OverlayBaseProps {
+ *   customProp: string;
+ * }
+ * ```
  */
 export interface OverlayBaseProps {
-  /** Whether the overlay is visible */
+  /**
+   * Whether the overlay is visible
+   * @example
+   * ```tsx
+   * const [open, setOpen] = useState(false);
+   * <Overlay open={open} ... />
+   * ```
+   */
   open: boolean;
-  /** Callback when overlay is dismissed (backdrop click, escape key, swipe) */
+  /**
+   * Callback when overlay is dismissed (backdrop click, escape key, swipe)
+   * @example
+   * ```tsx
+   * <Overlay onDismiss={() => setOpen(false)} ... />
+   * ```
+   */
   onDismiss: () => void;
   /** Content to render inside the overlay */
   children: ReactNode;

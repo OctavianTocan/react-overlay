@@ -25,6 +25,24 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./bottom-sheet": {
+      "types": "./dist/bottom-sheet.d.ts",
+      "import": "./dist/bottom-sheet.js",
+      "require": "./dist/bottom-sheet.cjs"
+    },
+    "./modal": {
+      "types": "./dist/modal.d.ts",
+      "import": "./dist/modal.js",
+      "require": "./dist/modal.cjs"
+    },
+    "./hooks": {
+      "types": "./dist/hooks.d.ts",
+      "import": "./dist/hooks.js",
+      "require": "./dist/hooks.cjs"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts"
+    },
     "./styles/scrollbar.css": "./dist/styles/scrollbar.css",
     "./package.json": "./package.json"
   },

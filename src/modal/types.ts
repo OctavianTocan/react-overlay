@@ -10,11 +10,38 @@ import type { DismissButtonProps } from "./DismissButton";
  *
  * Supports both new API (open/onDismiss) and legacy API (isOpen/onClose).
  * Components resolve these at runtime for backward compatibility.
+ *
+ * @example Basic usage
+ * ```tsx
+ * import { ModalWrapper } from '@octavian-tocan/react-overlay';
+ *
+ * <ModalWrapper
+ *   open={isOpen}
+ *   onDismiss={handleClose}
+ *   contentClassName="bg-white rounded-xl p-8 max-w-lg"
+ *   showDismissButton
+ * >
+ *   {children}
+ * </ModalWrapper>
+ * ```
  */
 export interface ModalWrapperProps {
-  /** Whether the modal is open (preferred) */
+  /**
+   * Whether the modal is open (preferred)
+   * @example
+   * ```tsx
+   * const [open, setOpen] = useState(false);
+   * <ModalWrapper open={open} ... />
+   * ```
+   */
   open?: boolean;
-  /** Callback when modal should close (preferred) */
+  /**
+   * Callback when modal should close (preferred)
+   * @example
+   * ```tsx
+   * <ModalWrapper onDismiss={() => setOpen(false)} ... />
+   * ```
+   */
   onDismiss?: () => void;
   /** @deprecated Use open instead */
   isOpen?: boolean;
@@ -22,7 +49,13 @@ export interface ModalWrapperProps {
   onClose?: () => void;
   /** Modal content */
   children: ReactNode;
-  /** Optional CSS class for content wrapper */
+  /**
+   * Optional CSS class for content wrapper
+   * @example
+   * ```tsx
+   * <ModalWrapper contentClassName="bg-white rounded-xl p-8 max-w-lg" ... />
+   * ```
+   */
   contentClassName?: string;
   /** Optional CSS class for overlay */
   overlayClassName?: string;
@@ -53,9 +86,36 @@ export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
  * Props for the high-level Modal component.
  *
  * Supports both new API (open/onDismiss) and legacy API (isOpen/onClose).
+ *
+ * @example Basic usage
+ * ```tsx
+ * import { Modal, ModalHeader, ModalDescription } from '@octavian-tocan/react-overlay';
+ * import { AlertCircle } from 'lucide-react';
+ *
+ * function App() {
+ *   const [open, setOpen] = useState(false);
+ *
+ *   return (
+ *     <Modal open={open} onDismiss={() => setOpen(false)} size="md">
+ *       <ModalHeader icon={<AlertCircle className="w-4 h-4 text-white" />} title="Confirm Action" />
+ *       <ModalDescription>Are you sure you want to proceed?</ModalDescription>
+ *       <div className="flex gap-2 mt-4">
+ *         <button onClick={() => setOpen(false)}>Cancel</button>
+ *         <button onClick={handleConfirm}>Confirm</button>
+ *       </div>
+ *     </Modal>
+ *   );
+ * }
+ * ```
  */
 export interface ModalProps extends Omit<ModalWrapperProps, "contentClassName"> {
-  /** Modal size preset. Default: 'md' */
+  /**
+   * Modal size preset. Default: 'md'
+   * @example
+   * ```tsx
+   * <Modal size="lg" ... />
+   * ```
+   */
   size?: ModalSize;
   /** Custom class for the content container */
   className?: string;

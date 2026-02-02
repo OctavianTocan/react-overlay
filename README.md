@@ -23,6 +23,75 @@ npm install react react-dom motion clsx tailwind-merge
 npm install lucide-react
 ```
 
+## Quick Start (Copy & Paste)
+
+### BottomSheet
+
+```tsx
+import { useState } from "react";
+import { BottomSheet } from "@octavian-tocan/react-overlay";
+
+export function MyBottomSheet() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Open Sheet</button>
+      <BottomSheet
+        open={open}
+        onDismiss={() => setOpen(false)}
+        snapPoints={({ maxHeight }) => [200, maxHeight * 0.5, maxHeight * 0.9]}
+      >
+        <div className="p-4">
+          <h2>Sheet Content</h2>
+          <p>Drag to resize or swipe down to dismiss.</p>
+        </div>
+      </BottomSheet>
+    </>
+  );
+}
+```
+
+### Modal
+
+```tsx
+import { useState } from "react";
+import { Modal, ModalHeader, ModalDescription } from "@octavian-tocan/react-overlay";
+import { AlertCircle } from "lucide-react";
+
+export function MyModal() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Open Modal</button>
+      <Modal open={open} onDismiss={() => setOpen(false)} size="md">
+        <ModalHeader icon={<AlertCircle className="w-4 h-4 text-white" />} title="Confirm Action" />
+        <ModalDescription>Are you sure you want to proceed?</ModalDescription>
+        <div className="flex gap-2 mt-4 justify-end">
+          <button onClick={() => setOpen(false)}>Cancel</button>
+          <button
+            onClick={() => {
+              /* handle confirm */ setOpen(false);
+            }}
+          >
+            Confirm
+          </button>
+        </div>
+      </Modal>
+    </>
+  );
+}
+```
+
+## Documentation
+
+- [Live Storybook](https://octaviantocan.github.io/react-overlay) <!-- TODO: Update after deployment -->
+- [API Reference](./docs/API.md)
+- [Examples](./docs/EXAMPLES.md)
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Migration Guide](./docs/MIGRATION.md)
+
 ## Components
 
 ### BottomSheet
@@ -30,7 +99,7 @@ npm install lucide-react
 A draggable bottom sheet with snap points, spring animations, and swipe-to-dismiss.
 
 ```tsx
-import { BottomSheet } from '@octavian-tocan/react-overlay';
+import { BottomSheet } from "@octavian-tocan/react-overlay";
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -66,8 +135,8 @@ function App() {
 A centered modal dialog with size presets and Motion animations.
 
 ```tsx
-import { Modal, ModalHeader, ModalDescription } from '@octavian-tocan/react-overlay';
-import { AlertCircle } from 'lucide-react';
+import { Modal, ModalHeader, ModalDescription } from "@octavian-tocan/react-overlay";
+import { AlertCircle } from "lucide-react";
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -101,7 +170,7 @@ function App() {
 Low-level modal component for full customization.
 
 ```tsx
-import { ModalWrapper } from '@octavian-tocan/react-overlay';
+import { ModalWrapper } from "@octavian-tocan/react-overlay";
 
 <ModalWrapper
   open={isOpen}
@@ -120,8 +189,8 @@ import { ModalWrapper } from '@octavian-tocan/react-overlay';
 Header with icon badge and title.
 
 ```tsx
-import { ModalHeader } from '@octavian-tocan/react-overlay';
-import { AlertCircle } from 'lucide-react';
+import { ModalHeader } from "@octavian-tocan/react-overlay";
+import { AlertCircle } from "lucide-react";
 
 <ModalHeader icon={<AlertCircle className="w-4 h-4 text-white" />} title="Confirm Delete" />;
 ```
@@ -131,7 +200,7 @@ import { AlertCircle } from 'lucide-react';
 Styled description text.
 
 ```tsx
-import { ModalDescription } from '@octavian-tocan/react-overlay';
+import { ModalDescription } from "@octavian-tocan/react-overlay";
 
 <ModalDescription>This action cannot be undone.</ModalDescription>;
 ```
@@ -141,7 +210,7 @@ import { ModalDescription } from '@octavian-tocan/react-overlay';
 Close button for overlays.
 
 ```tsx
-import { DismissButton } from '@octavian-tocan/react-overlay';
+import { DismissButton } from "@octavian-tocan/react-overlay";
 
 <DismissButton
   onClick={handleClose}
@@ -157,7 +226,7 @@ import { DismissButton } from '@octavian-tocan/react-overlay';
 Lock body scroll when an overlay is open. Supports multiple concurrent overlays via ref-counting.
 
 ```tsx
-import { useBodyScrollLock } from '@octavian-tocan/react-overlay';
+import { useBodyScrollLock } from "@octavian-tocan/react-overlay";
 
 function MyOverlay({ isOpen }) {
   useBodyScrollLock(isOpen);
@@ -172,9 +241,9 @@ function MyOverlay({ isOpen }) {
 Class name utility (clsx + tailwind-merge) for conditional classes.
 
 ```tsx
-import { cn } from '@octavian-tocan/react-overlay';
+import { cn } from "@octavian-tocan/react-overlay";
 
-<div className={cn('base-class', isActive && 'active-class', className)} />;
+<div className={cn("base-class", isActive && "active-class", className)} />;
 ```
 
 ## TypeScript
@@ -191,7 +260,7 @@ import type {
   ModalHeaderProps,
   ModalDescriptionProps,
   DismissButtonProps,
-} from '@octavian-tocan/react-overlay';
+} from "@octavian-tocan/react-overlay";
 ```
 
 ## Custom Scrollbar Styling
@@ -204,7 +273,7 @@ Import the CSS file once in your app entry point:
 
 ```tsx
 // In your app entry (e.g., main.tsx, App.tsx)
-import '@octavian-tocan/react-overlay/styles/scrollbar.css';
+import "@octavian-tocan/react-overlay/styles/scrollbar.css";
 ```
 
 ### Customization
@@ -213,10 +282,10 @@ Override CSS variables to match your theme:
 
 ```css
 :root {
-  --ro-scrollbar-thumb: #6366f1;        /* Scrollbar color */
-  --ro-scrollbar-thumb-hover: #4f46e5;  /* Hover color */
-  --ro-scrollbar-width: 6px;            /* Width */
-  --ro-scrollbar-track: transparent;    /* Track color */
+  --ro-scrollbar-thumb: #6366f1; /* Scrollbar color */
+  --ro-scrollbar-thumb-hover: #4f46e5; /* Hover color */
+  --ro-scrollbar-width: 6px; /* Width */
+  --ro-scrollbar-track: transparent; /* Track color */
 }
 ```
 
@@ -231,13 +300,6 @@ Override CSS variables to match your theme:
   Scrollable content with custom styling
 </div>
 ```
-
-## Documentation
-
-- [API Reference](./docs/API.md) - Complete API documentation
-- [Architecture](./docs/ARCHITECTURE.md) - Technical architecture
-- [Examples](./docs/EXAMPLES.md) - Practical code examples
-- [Migration Guide](./docs/MIGRATION.md) - Upgrading and migration
 
 ## License
 

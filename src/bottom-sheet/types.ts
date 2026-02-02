@@ -70,12 +70,52 @@ export interface BottomSheetRef {
 
 /**
  * Props for the BottomSheet component.
+ *
+ * @example Basic usage
+ * ```tsx
+ * import { BottomSheet } from '@octavian-tocan/react-overlay';
+ *
+ * function App() {
+ *   const [open, setOpen] = useState(false);
+ *
+ *   return (
+ *     <BottomSheet open={open} onDismiss={() => setOpen(false)}>
+ *       <p>Sheet content here</p>
+ *     </BottomSheet>
+ *   );
+ * }
+ * ```
+ *
+ * @example With snap points
+ * ```tsx
+ * <BottomSheet
+ *   open={open}
+ *   onDismiss={() => setOpen(false)}
+ *   snapPoints={({ maxHeight }) => [200, maxHeight * 0.5, maxHeight * 0.9]}
+ *   defaultSnap={({ snapPoints }) => snapPoints[1]}
+ * >
+ *   <p>Content</p>
+ * </BottomSheet>
+ * ```
  */
 export interface BottomSheetProps {
   // Core props
-  /** Whether the sheet is open */
+  /**
+   * Whether the sheet is open
+   * @example
+   * ```tsx
+   * const [open, setOpen] = useState(false);
+   * <BottomSheet open={open} ... />
+   * ```
+   */
   open: boolean;
-  /** Callback when the sheet is dismissed (backdrop tap, swipe, escape key) */
+  /**
+   * Callback when the sheet is dismissed (backdrop tap, swipe, escape key)
+   * @example
+   * ```tsx
+   * <BottomSheet onDismiss={() => setOpen(false)} ... />
+   * ```
+   */
   onDismiss?: () => void;
   /** @deprecated Use onDismiss instead. Callback when the sheet is closed. */
   onClose?: () => void;
@@ -83,15 +123,46 @@ export interface BottomSheetProps {
   children: React.ReactNode;
 
   // Snap points
-  /** Snap points function or array. Defaults to minHeight. */
+  /**
+   * Snap points function or array. Defaults to minHeight.
+   * @example Array of fixed heights
+   * ```tsx
+   * <BottomSheet snapPoints={[200, 400, 600]} ... />
+   * ```
+   * @example Function with measurements
+   * ```tsx
+   * <BottomSheet
+   *   snapPoints={({ maxHeight, minHeight }) => [minHeight, maxHeight * 0.5, maxHeight * 0.9]}
+   *   ...
+   * />
+   * ```
+   */
   snapPoints?: SnapPointsFunction | number[];
-  /** Initial snap point when opening. Defaults to first snap point. */
+  /**
+   * Initial snap point when opening. Defaults to first snap point.
+   * @example
+   * ```tsx
+   * <BottomSheet defaultSnap={({ snapPoints }) => snapPoints[1]} ... />
+   * ```
+   */
   defaultSnap?: number | DefaultSnapFunction;
 
   // Header/Footer
-  /** Sticky header content */
+  /**
+   * Sticky header content
+   * @example
+   * ```tsx
+   * <BottomSheet header={<h2>Sheet Title</h2>} ... />
+   * ```
+   */
   header?: React.ReactNode;
-  /** Sticky footer content */
+  /**
+   * Sticky footer content
+   * @example
+   * ```tsx
+   * <BottomSheet footer={<button>Submit</button>} ... />
+   * ```
+   */
   footer?: React.ReactNode;
   /** @deprecated Use header prop instead. Optional title displayed at the top of the sheet */
   title?: string;

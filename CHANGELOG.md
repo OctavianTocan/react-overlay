@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **useVisualViewport:** Add hook for tracking visual viewport and detecting virtual keyboard state ([dd7b7b6](https://github.com/OctavianTocan/react-overlay/commit/dd7b7b6))
+- **Visual regression testing:** Add Lost Pixel integration for UI consistency checks ([b0f51df](https://github.com/OctavianTocan/react-overlay/commit/b0f51df))
+
+### Changed
+
+- **BREAKING: tailwind-merge ^3.0.0:** Updated peer dependency to support Tailwind CSS v4 only ([f4cf723](https://github.com/OctavianTocan/react-overlay/commit/f4cf723))
+- **BottomSheet:** Improved layout spacing for better visual consistency ([e6e0f0b](https://github.com/OctavianTocan/react-overlay/commit/e6e0f0b))
+
+### Fixed
+
+- **BottomSheet tests:** Fixed tests to use fake timers for reliable animation testing ([d7eb88c](https://github.com/OctavianTocan/react-overlay/commit/d7eb88c))
 
 ### Chores
 
@@ -17,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **prettier:** Add Prettier configuration for consistent formatting ([dd7b7b6](https://github.com/OctavianTocan/react-overlay/commit/dd7b7b6))
 - **gitignore:** Exclude storybook-static build output from version control ([dd7b7b6](https://github.com/OctavianTocan/react-overlay/commit/dd7b7b6))
 - **vitest:** Add TypeScript declarations for Vitest matchers ([dd7b7b6](https://github.com/OctavianTocan/react-overlay/commit/dd7b7b6))
+
+### Documentation
+
+- **CLAUDE.md:** Add visual regression check to before committing section ([21d7a4f](https://github.com/OctavianTocan/react-overlay/commit/21d7a4f))
 
 ## [1.0.1] - 2026-02-01
 

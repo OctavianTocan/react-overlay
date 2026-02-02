@@ -7,6 +7,8 @@ export { BottomSheet } from "./BottomSheet";
 export type {
   BottomSheetProps,
   BottomSheetRef,
+  BottomSheetDismissButton,
+  DismissButtonPlacement,
   DefaultSnapFunction,
   ResizeSource,
   SnapPointMeasurements,

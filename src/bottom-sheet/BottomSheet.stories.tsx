@@ -593,8 +593,8 @@ export const KeyboardAwareCustomSnapPoint: Story = {
     >
       <div className="space-y-4 pt-4">
         <p className="text-gray-600 text-sm">
-          This example uses keyboardSnapPoint=1 to snap to the second snap point (300px) instead of the smallest. This
-          gives more space for form content while still accommodating the keyboard.
+          This example uses keyboardSnapPoint=1 to snap to second snap point (300px) instead of smallest. This gives
+          more space for form content while still accommodating keyboard.
         </p>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
@@ -612,6 +612,126 @@ export const KeyboardAwareCustomSnapPoint: Story = {
             <li>500px (default open)</li>
           </ul>
         </div>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const WithDismissButtonRight: Story = {
+  render: () => (
+    <BottomSheetDemo
+      dismissButton={{ show: true, position: "right" }}
+      header={
+        <div className="pb-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Sheet with Dismiss Button</h2>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600">
+          This sheet has a dismiss button positioned on the right side. Click the X button to close the sheet.
+        </p>
+        <p className="text-sm text-gray-500">
+          The button is absolutely positioned and works independently of the header content.
+        </p>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const WithDismissButtonLeft: Story = {
+  render: () => (
+    <BottomSheetDemo
+      dismissButton={{ show: true, position: "left" }}
+      header={
+        <div className="pb-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Left-Aligned Dismiss Button</h2>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600">
+          This sheet has a dismiss button positioned on the left side. This can be useful for left-to-right reading
+          patterns or specific design requirements.
+        </p>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const DismissButtonWithCustomProps: Story = {
+  render: () => (
+    <BottomSheetDemo
+      dismissButton={{
+        show: true,
+        position: "right",
+        props: {
+          "aria-label": "Close this dialog",
+          variant: "subtle",
+          size: 20,
+        },
+      }}
+      header={
+        <div className="pb-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Custom Dismiss Button</h2>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600">
+          This example shows how to customize the dismiss button using the <code>props</code> property:
+        </p>
+        <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+          <li>Custom aria-label for accessibility</li>
+          <li>Subtle variant (borderless)</li>
+          <li>Custom icon size (20px)</li>
+        </ul>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const DismissButtonWithHeader: Story = {
+  render: () => (
+    <BottomSheetDemo
+      dismissButton={{ show: true, position: "right" }}
+      header={
+        <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Custom Header</h2>
+            <p className="text-sm text-gray-500">With dismiss button overlay</p>
+          </div>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600">
+          The dismiss button renders on top of the header content, positioned absolutely. This means it works regardless
+          of whether you provide a custom header or not.
+        </p>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const DismissButtonHidden: Story = {
+  render: () => (
+    <BottomSheetDemo
+      dismissButton={{ show: false }}
+      header={
+        <div className="pb-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Dismiss Button Hidden</h2>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600">
+          This sheet has <code>{"dismissButton={{ show: false }}"}</code> explicitly set, so no dismiss button is
+          rendered.
+        </p>
+        <p className="text-sm text-gray-500">
+          Users can still close the sheet by clicking the backdrop, dragging down, or pressing Escape.
+        </p>
       </div>
     </BottomSheetDemo>
   ),

@@ -19,6 +19,7 @@ import {
 } from "./constants";
 import type { BottomSheetProps, BottomSheetRef, SnapPointMeasurements, SnapPointState } from "./types";
 import { useBodyScrollLock, useVisualViewport } from "../hooks";
+import { DismissButton } from "../modal/DismissButton";
 
 // ============================================================================
 // Helper functions
@@ -88,6 +89,7 @@ function BottomSheetContent({
   sheetRef,
   keyboardBehavior = "ignore",
   keyboardSnapPoint = 0,
+  dismissButton,
 }: BottomSheetContentProps): React.JSX.Element | null {
   // Support both testId (new) and testID (deprecated) with testId taking precedence
   const resolvedTestId = testId ?? testID;
@@ -652,6 +654,15 @@ function BottomSheetContent({
             transitionDuration !== null ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)` : "none",
         }}
       >
+        {dismissButton?.show && (
+          <DismissButton
+            onClick={() => animateClose("custom")}
+            position={dismissButton.position === "left" ? "absolute top-4 left-4 z-10" : "absolute top-4 right-4 z-10"}
+            avoidOverflowClipping={false}
+            {...dismissButton.props}
+          />
+        )}
+
         {/* Drag Handle Zone */}
         <div style={styles.handleZone} data-bottom-sheet-drag-zone>
           <div
@@ -677,9 +688,6 @@ function BottomSheetContent({
 
         {/* Footer (Sticky) */}
         {footer && <div style={styles.footerContainer}>{footer}</div>}
-
-        {/* Safe Area Spacer - only render when there's no footer (footer handles its own safe area) */}
-        {!footer && <div style={styles.safeAreaSpacer} />}
       </div>
     </div>
   );
@@ -781,6 +789,10 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
     paddingLeft: `${SPACING.lg}px`,
     paddingRight: `${SPACING.lg}px`,
+    paddingBottom: `${SPACING.sm}px`,
+    borderBottomWidth: "1px",
+    borderBottomStyle: "solid",
+    borderBottomColor: COLORS.border.subtle,
   },
   legacyHeader: {
     paddingBottom: `${SPACING.sm}px`,
@@ -800,7 +812,8 @@ const styles: Record<string, React.CSSProperties> = {
   scrollContent: {
     paddingLeft: `${SPACING.lg}px`,
     paddingRight: `${SPACING.lg}px`,
-    paddingBottom: `${SPACING.md}px`,
+    // Use calc() to add safe area inset to base padding
+    paddingBottom: `calc(${SPACING.md}px + env(safe-area-inset-bottom, 0px))`,
   },
   footerContainer: {
     flexShrink: 0,
@@ -812,8 +825,5 @@ const styles: Record<string, React.CSSProperties> = {
     borderTopWidth: "1px",
     borderTopStyle: "solid",
     borderTopColor: COLORS.border.subtle,
-  },
-  safeAreaSpacer: {
-    paddingBottom: `${SPACING.md}px`,
   },
 };

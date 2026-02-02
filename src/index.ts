@@ -49,6 +49,8 @@ export { BottomSheet, COLORS, DURATION, RADIUS, SPACING, SPRING } from "./bottom
 export type {
   BottomSheetProps,
   BottomSheetRef,
+  BottomSheetDismissButton,
+  DismissButtonPlacement,
   DefaultSnapFunction,
   ResizeSource,
   SnapPointMeasurements,

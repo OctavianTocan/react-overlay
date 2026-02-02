@@ -688,9 +688,6 @@ function BottomSheetContent({
 
         {/* Footer (Sticky) */}
         {footer && <div style={styles.footerContainer}>{footer}</div>}
-
-        {/* Safe Area Spacer - only render when there's no footer (footer handles its own safe area) */}
-        {!footer && <div style={styles.safeAreaSpacer} />}
       </div>
     </div>
   );
@@ -792,6 +789,10 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
     paddingLeft: `${SPACING.lg}px`,
     paddingRight: `${SPACING.lg}px`,
+    paddingBottom: `${SPACING.sm}px`,
+    borderBottomWidth: "1px",
+    borderBottomStyle: "solid",
+    borderBottomColor: COLORS.border.subtle,
   },
   legacyHeader: {
     paddingBottom: `${SPACING.sm}px`,
@@ -811,7 +812,8 @@ const styles: Record<string, React.CSSProperties> = {
   scrollContent: {
     paddingLeft: `${SPACING.lg}px`,
     paddingRight: `${SPACING.lg}px`,
-    paddingBottom: `${SPACING.md}px`,
+    // Use calc() to add safe area inset to base padding
+    paddingBottom: `calc(${SPACING.md}px + env(safe-area-inset-bottom, 0px))`,
   },
   footerContainer: {
     flexShrink: 0,
@@ -823,8 +825,5 @@ const styles: Record<string, React.CSSProperties> = {
     borderTopWidth: "1px",
     borderTopStyle: "solid",
     borderTopColor: COLORS.border.subtle,
-  },
-  safeAreaSpacer: {
-    paddingBottom: `${SPACING.md}px`,
   },
 };

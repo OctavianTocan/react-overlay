@@ -2,8 +2,8 @@
  * @fileoverview Shared utility functions for overlay components.
  */
 
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Merges Tailwind CSS classes with proper precedence handling.

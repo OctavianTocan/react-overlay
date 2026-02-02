@@ -3,10 +3,10 @@
  * @description Reusable description text component for modals.
  */
 
-'use client';
+"use client";
 
-import React, { ReactNode } from 'react';
-import { cn } from '../utils';
+import React, { ReactNode } from "react";
+import { cn } from "../utils";
 
 export interface ModalDescriptionProps {
   /** Description content */
@@ -26,5 +26,5 @@ export interface ModalDescriptionProps {
  * ```
  */
 export function ModalDescription({ children, className }: ModalDescriptionProps) {
-  return <p className={cn('text-gray-500 text-sm font-normal leading-5 m-0', className)}>{children}</p>;
+  return <p className={cn("text-gray-500 text-sm font-normal leading-5 m-0", className)}>{children}</p>;
 }

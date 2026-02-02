@@ -31,15 +31,15 @@ export type SnapPointsFunction = (measurements: SnapPointMeasurements) => number
 export type DefaultSnapFunction = (state: SnapPointState) => number;
 
 /** Spring event types */
-export type SpringEventType = 'OPEN' | 'CLOSE' | 'SNAP' | 'RESIZE';
+export type SpringEventType = "OPEN" | "CLOSE" | "SNAP" | "RESIZE";
 
 /** Source of resize events */
-export type ResizeSource = 'window' | 'maxheightprop' | 'element';
+export type ResizeSource = "window" | "maxheightprop" | "element" | "keyboard";
 
 /** Spring event object */
 export interface SpringEvent {
   type: SpringEventType;
-  source?: 'dragging' | 'custom' | ResizeSource;
+  source?: "dragging" | "custom" | ResizeSource;
 }
 
 /** Options for snapTo method */
@@ -123,4 +123,22 @@ export interface BottomSheetProps {
   testId?: string;
   /** @deprecated Use testId instead */
   testID?: string;
+
+  // Keyboard behavior
+  /**
+   * How the sheet should behave when the virtual keyboard opens on mobile.
+   * - 'snap': Snap to a smaller snap point to fit within visible viewport
+   * - 'ignore': (default) Sheet maintains its size
+   * @default 'ignore'
+   */
+  keyboardBehavior?: "snap" | "ignore";
+
+  /**
+   * Which snap point to use when keyboard opens. Can be:
+   * - A number (index into snapPoints array, 0 = smallest)
+   * - A function receiving current state and returning target height
+   * Only applies when keyboardBehavior is 'snap'.
+   * @default 0 (smallest snap point)
+   */
+  keyboardSnapPoint?: number | ((state: SnapPointState) => number);
 }

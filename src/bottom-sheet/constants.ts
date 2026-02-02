@@ -38,16 +38,16 @@ export const RADIUS = {
 /** Default colors */
 export const COLORS = {
   surface: {
-    card: '#FFFFFF',
+    card: "#FFFFFF",
   },
   text: {
-    primary: '#1A1A2E',
+    primary: "#1A1A2E",
   },
   border: {
-    subtle: '#E5E5E5',
+    subtle: "#E5E5E5",
   },
   neutral: {
-    gray300: '#D1D5DB',
+    gray300: "#D1D5DB",
   },
 } as const;
 

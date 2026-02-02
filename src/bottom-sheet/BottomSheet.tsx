@@ -15,11 +15,10 @@ import {
   RADIUS,
   SNAP_VELOCITY_THRESHOLD,
   SPACING,
-  SPRING,
   VELOCITY_THRESHOLD,
 } from "./constants";
 import type { BottomSheetProps, BottomSheetRef, SnapPointMeasurements, SnapPointState } from "./types";
-import { useBodyScrollLock } from "../hooks";
+import { useBodyScrollLock, useVisualViewport } from "../hooks";
 
 // ============================================================================
 // Helper functions
@@ -32,7 +31,7 @@ function clamp(value: number, min: number, max: number): number {
 function findClosestSnapPoint(height: number, snapPoints: number[]): number {
   if (snapPoints.length === 0) return height;
   return snapPoints.reduce((closest, point) =>
-    Math.abs(point - height) < Math.abs(closest - height) ? point : closest,
+    Math.abs(point - height) < Math.abs(closest - height) ? point : closest
   );
 }
 
@@ -83,10 +82,12 @@ function BottomSheetContent({
   style,
   onSpringStart,
   onSpringEnd,
-  onSpringCancel,
+  onSpringCancel: _onSpringCancel,
   testId,
   testID,
   sheetRef,
+  keyboardBehavior = "ignore",
+  keyboardSnapPoint = 0,
 }: BottomSheetContentProps): React.JSX.Element | null {
   // Support both testId (new) and testID (deprecated) with testId taking precedence
   const resolvedTestId = testId ?? testID;
@@ -95,7 +96,7 @@ function BottomSheetContent({
   const [windowHeight, setWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 800);
   const [sheetHeight, setSheetHeight] = useState(0);
   const [backdropOpacity, setBackdropOpacity] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [_isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDuration, setTransitionDuration] = useState<number | null>(null);
 
   // ========== Refs ==========
@@ -165,7 +166,11 @@ function BottomSheetContent({
 
   // ========== Dismiss Handler ==========
   const handleDismiss = useCallback(() => {
-    onDismiss?.() ?? onClose?.();
+    if (onDismiss) {
+      onDismiss();
+    } else {
+      onClose?.();
+    }
   }, [onDismiss, onClose]);
 
   // ========== Animation Helpers ==========
@@ -221,7 +226,7 @@ function BottomSheetContent({
         onSpringEnd?.({ type: "SNAP", source });
       }, springDuration);
     },
-    [snapPoints, maxH, onSpringStart, onSpringEnd, setHeightWithTransition],
+    [snapPoints, maxH, onSpringStart, onSpringEnd, setHeightWithTransition]
   );
 
   const animateOpen = useCallback(() => {
@@ -259,7 +264,7 @@ function BottomSheetContent({
             initialFocusRef.current.focus();
           }
         },
-        Math.max(springDuration, ANIMATION_DURATION_MS),
+        Math.max(springDuration, ANIMATION_DURATION_MS)
       );
     });
   }, [
@@ -293,7 +298,7 @@ function BottomSheetContent({
         handleDismiss();
       }, ANIMATION_DURATION_MS);
     },
-    [onSpringStart, onSpringEnd, handleDismiss, setHeightWithTransition, setBackdropOpacityWithTransition],
+    [onSpringStart, onSpringEnd, handleDismiss, setHeightWithTransition, setBackdropOpacityWithTransition]
   );
 
   // ========== Imperative Handle ==========
@@ -317,7 +322,7 @@ function BottomSheetContent({
         return currentHeightRef.current;
       },
     }),
-    [snapPoints, maxH, animateToHeight],
+    [snapPoints, maxH, animateToHeight]
   );
 
   // ========== Drag Handlers ==========
@@ -343,7 +348,7 @@ function BottomSheetContent({
 
       setHeightImmediate(newHeight);
     },
-    [maxH, setHeightImmediate],
+    [maxH, setHeightImmediate]
   );
 
   const handleDragEnd = useCallback(
@@ -376,7 +381,7 @@ function BottomSheetContent({
 
       animateToHeight(targetSnap, "dragging");
     },
-    [snapPoints, animateClose, animateToHeight],
+    [snapPoints, animateClose, animateToHeight]
   );
 
   // ========== Touch Event Handlers ==========
@@ -427,7 +432,7 @@ function BottomSheetContent({
       handleDragStart(e.clientY);
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
     },
-    [handleDragStart],
+    [handleDragStart]
   );
 
   const handlePointerMove = useCallback(
@@ -436,7 +441,7 @@ function BottomSheetContent({
         handleDragMove(e.clientY);
       }
     },
-    [handleDragMove],
+    [handleDragMove]
   );
 
   const handlePointerUp = useCallback(
@@ -445,7 +450,7 @@ function BottomSheetContent({
         handleDragEnd(e.clientY);
       }
     },
-    [handleDragEnd],
+    [handleDragEnd]
   );
 
   // ========== Open/Close Effects ==========
@@ -528,14 +533,70 @@ function BottomSheetContent({
   // ========== Body Scroll Lock ==========
   useBodyScrollLock(isVisible && scrollLocking);
 
+  // ========== Visual Viewport / Keyboard Detection ==========
+  const visualViewport = useVisualViewport();
+  const wasKeyboardOpenRef = useRef(false);
+
+  useEffect(() => {
+    // Only handle keyboard behavior if enabled and sheet is visible
+    if (keyboardBehavior !== "snap" || !isVisible) {
+      wasKeyboardOpenRef.current = visualViewport.isKeyboardOpen;
+      return;
+    }
+
+    // Detect keyboard opening (transition from closed to open)
+    const keyboardJustOpened = visualViewport.isKeyboardOpen && !wasKeyboardOpenRef.current;
+    wasKeyboardOpenRef.current = visualViewport.isKeyboardOpen;
+
+    if (!keyboardJustOpened) return;
+
+    // Calculate target snap point
+    let targetHeight: number;
+
+    if (typeof keyboardSnapPoint === "function") {
+      const state: SnapPointState = {
+        headerHeight: 0,
+        footerHeight: 0,
+        height: currentHeightRef.current,
+        minHeight: snapPoints[0] ?? 100,
+        maxHeight: snapPoints[snapPoints.length - 1] ?? maxH,
+        snapPoints,
+        lastSnap: lastSnapRef.current,
+      };
+      targetHeight = keyboardSnapPoint(state);
+    } else {
+      // keyboardSnapPoint is an index into snapPoints array
+      const sortedSnapPoints = [...snapPoints].sort((a, b) => a - b);
+      const index = clamp(keyboardSnapPoint, 0, sortedSnapPoints.length - 1);
+      targetHeight = sortedSnapPoints[index] ?? sortedSnapPoints[0] ?? 200;
+    }
+
+    // Only snap if current height is larger than target
+    if (currentHeightRef.current > targetHeight) {
+      onSpringStart?.({ type: "RESIZE", source: "keyboard" });
+      animateToHeight(targetHeight, "custom");
+    }
+  }, [
+    visualViewport.isKeyboardOpen,
+    keyboardBehavior,
+    keyboardSnapPoint,
+    isVisible,
+    snapPoints,
+    maxH,
+    onSpringStart,
+    animateToHeight,
+  ]);
+
   // ========== Cleanup ==========
   useEffect(() => {
+    const animationFrameId = animationFrameRef.current;
+    const transitionTimeoutId = transitionTimeoutRef.current;
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
-      if (transitionTimeoutRef.current) {
-        clearTimeout(transitionTimeoutRef.current);
+      if (transitionTimeoutId) {
+        clearTimeout(transitionTimeoutId);
       }
     };
   }, []);
@@ -630,7 +691,7 @@ function BottomSheetContent({
 
 export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(function BottomSheet(
   props: BottomSheetProps,
-  ref: React.ForwardedRef<BottomSheetRef>,
+  ref: React.ForwardedRef<BottomSheetRef>
 ) {
   if (typeof document === "undefined") {
     return null;

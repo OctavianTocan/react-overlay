@@ -1,61 +1,61 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
-import { useBodyScrollLock, lockBodyScroll, unlockBodyScroll } from '../hooks';
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { renderHook } from "@testing-library/react";
+import { useBodyScrollLock, lockBodyScroll, unlockBodyScroll } from "../hooks";
 
-describe('useBodyScrollLock', () => {
+describe("useBodyScrollLock", () => {
   beforeEach(() => {
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   });
 
   afterEach(() => {
     // Reset any locks
-    while (document.body.style.overflow === 'hidden') {
+    while (document.body.style.overflow === "hidden") {
       unlockBodyScroll();
     }
   });
 
-  it('locks body scroll when enabled', () => {
+  it("locks body scroll when enabled", () => {
     renderHook(() => useBodyScrollLock(true));
 
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.style.overflow).toBe("hidden");
   });
 
-  it('does not lock body scroll when disabled', () => {
+  it("does not lock body scroll when disabled", () => {
     renderHook(() => useBodyScrollLock(false));
 
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.style.overflow).toBe("");
   });
 
-  it('unlocks body scroll on unmount', () => {
+  it("unlocks body scroll on unmount", () => {
     const { unmount } = renderHook(() => useBodyScrollLock(true));
 
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.style.overflow).toBe("hidden");
     unmount();
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.style.overflow).toBe("");
   });
 });
 
-describe('lockBodyScroll / unlockBodyScroll', () => {
+describe("lockBodyScroll / unlockBodyScroll", () => {
   beforeEach(() => {
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   });
 
   afterEach(() => {
-    while (document.body.style.overflow === 'hidden') {
+    while (document.body.style.overflow === "hidden") {
       unlockBodyScroll();
     }
   });
 
-  it('supports ref-counting for multiple locks', () => {
+  it("supports ref-counting for multiple locks", () => {
     lockBodyScroll();
     lockBodyScroll();
 
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.style.overflow).toBe("hidden");
 
     unlockBodyScroll();
-    expect(document.body.style.overflow).toBe('hidden'); // Still locked
+    expect(document.body.style.overflow).toBe("hidden"); // Still locked
 
     unlockBodyScroll();
-    expect(document.body.style.overflow).toBe(''); // Now unlocked
+    expect(document.body.style.overflow).toBe(""); // Now unlocked
   });
 });

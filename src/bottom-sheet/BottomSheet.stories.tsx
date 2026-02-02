@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { BottomSheet } from "./BottomSheet";
 import type { BottomSheetRef, SpringEvent } from "./types";
 
-const meta = {
+const meta: Meta<typeof BottomSheet> = {
   title: "Components/BottomSheet",
   component: BottomSheet,
   tags: ["autodocs"],
@@ -32,14 +32,23 @@ const meta = {
       control: { type: "range", min: 200, max: 800, step: 50 },
       description: "Maximum height constraint",
     },
+    keyboardBehavior: {
+      control: "select",
+      options: ["ignore", "snap"],
+      description: "How the sheet behaves when virtual keyboard opens",
+    },
+    keyboardSnapPoint: {
+      control: "number",
+      description: "Index of snap point to use when keyboard opens",
+    },
   },
   parameters: {
     layout: "fullscreen",
   },
-} satisfies Meta<typeof BottomSheet>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof BottomSheet>;
 
 // Interactive wrapper for controlled bottom sheet stories
 function BottomSheetDemo({
@@ -498,6 +507,112 @@ export const WithTestId: Story = {
       <p className="text-gray-600">
         This sheet has testId="custom-bottom-sheet" for testing. Inspect the DOM to see the data-testid attribute.
       </p>
+    </BottomSheetDemo>
+  ),
+};
+
+export const KeyboardAware: Story = {
+  render: () => (
+    <BottomSheetDemo
+      snapPoints={[200, 400, 600]}
+      defaultSnap={600}
+      keyboardBehavior="snap"
+      keyboardSnapPoint={0}
+      buttonText="Open (Keyboard Aware)"
+      header={
+        <div className="pb-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Keyboard-Aware Form</h2>
+          <p className="text-sm text-gray-500">Sheet snaps to 200px when keyboard opens</p>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600 text-sm">
+          On mobile devices, when you focus an input field and the virtual keyboard opens, the sheet will automatically
+          snap to the smallest snap point (200px) to ensure content remains visible.
+        </p>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            placeholder="Enter your name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input
+            type="email"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            placeholder="Enter your email"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input
+            type="tel"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            placeholder="Enter your phone"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+          <textarea
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+            rows={3}
+            placeholder="Enter your message"
+          />
+        </div>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "On mobile devices, when the virtual keyboard opens (input focus), the sheet automatically snaps to a smaller snap point. Test this on a real mobile device or use Chrome DevTools mobile emulation with virtual keyboard enabled.",
+      },
+    },
+  },
+};
+
+export const KeyboardAwareCustomSnapPoint: Story = {
+  render: () => (
+    <BottomSheetDemo
+      snapPoints={[150, 300, 500]}
+      defaultSnap={500}
+      keyboardBehavior="snap"
+      keyboardSnapPoint={1}
+      buttonText="Open (Snaps to Middle)"
+      header={
+        <div className="pb-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Custom Keyboard Snap</h2>
+          <p className="text-sm text-gray-500">Sheet snaps to 300px (middle) when keyboard opens</p>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600 text-sm">
+          This example uses keyboardSnapPoint=1 to snap to the second snap point (300px) instead of the smallest. This
+          gives more space for form content while still accommodating the keyboard.
+        </p>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+          <input
+            type="search"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            placeholder="Search..."
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-gray-500">Snap points:</p>
+          <ul className="text-sm text-gray-600 list-disc list-inside">
+            <li>150px (smallest)</li>
+            <li>300px (keyboard snap target)</li>
+            <li>500px (default open)</li>
+          </ul>
+        </div>
+      </div>
     </BottomSheetDemo>
   ),
 };

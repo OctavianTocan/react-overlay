@@ -3,14 +3,14 @@
  * @description Dismiss/close button for modals and overlays.
  */
 
-'use client';
+"use client";
 
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
-import { cn } from '../utils';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { X } from "lucide-react";
+import { cn } from "../utils";
 
-export type DismissButtonVariant = 'default' | 'subtle';
+export type DismissButtonVariant = "default" | "subtle";
 
 export interface DismissButtonProps {
   /** Called when the button is clicked */
@@ -20,7 +20,7 @@ export interface DismissButtonProps {
   /** Optional className overrides */
   className?: string;
   /** Accessible label for screen readers */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Positioning classes for the button */
   position?: string;
   /** Whether the button is disabled */
@@ -39,12 +39,12 @@ export interface DismissButtonProps {
 
 const VARIANT_CLASSES: Record<DismissButtonVariant, string> = {
   default:
-    'size-7 border border-blue-600/40 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 hover:border-blue-600/60',
-  subtle: 'size-6 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-800',
+    "size-7 border border-blue-600/40 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 hover:border-blue-600/60",
+  subtle: "size-6 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-800",
 };
 
 const BASE_BUTTON_CLASSES =
-  'grid place-items-center p-0 leading-none rounded-full transition-all motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-1';
+  "grid place-items-center p-0 leading-none rounded-full transition-all motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-1";
 
 function getPositionFromClass(position: string) {
   const top = /\btop-(\d+)\b/.exec(position)?.[1];
@@ -79,10 +79,10 @@ export function DismissButton({
   onClick,
   size = 18,
   className,
-  position = 'absolute -top-2 -right-2 z-10',
-  'aria-label': ariaLabel = 'Dismiss',
+  position = "absolute -top-2 -right-2 z-10",
+  "aria-label": ariaLabel = "Dismiss",
   disabled = false,
-  variant = 'default',
+  variant = "default",
   testId,
   avoidOverflowClipping = true,
 }: DismissButtonProps) {
@@ -93,14 +93,14 @@ export function DismissButton({
   const anchorStyle = useMemo(() => {
     const p = getPositionFromClass(position);
     return {
-      position: 'absolute',
-      top: p.topPx !== undefined ? `${Math.max(p.topPx, 0)}px` : '0px',
-      right: p.rightPx !== undefined ? `${Math.max(p.rightPx, 0)}px` : '0px',
+      position: "absolute",
+      top: p.topPx !== undefined ? `${Math.max(p.topPx, 0)}px` : "0px",
+      right: p.rightPx !== undefined ? `${Math.max(p.rightPx, 0)}px` : "0px",
       bottom: p.bottomPx !== undefined ? `${Math.max(p.bottomPx, 0)}px` : undefined,
       left: p.leftPx !== undefined ? `${Math.max(p.leftPx, 0)}px` : undefined,
-      width: '0px',
-      height: '0px',
-      pointerEvents: 'none',
+      width: "0px",
+      height: "0px",
+      pointerEvents: "none",
     } as React.CSSProperties;
   }, [position]);
 
@@ -117,25 +117,25 @@ export function DismissButton({
       if (!anchor) return;
       const rect = anchor.getBoundingClientRect();
       setFixedStyle({
-        position: 'fixed',
+        position: "fixed",
         top: rect.top,
         right: window.innerWidth - rect.right,
-        transform: 'translate(50%, -50%)',
+        transform: "translate(50%, -50%)",
         zIndex: 9999,
       });
     };
 
     update();
-    window.addEventListener('scroll', update, { passive: true, capture: true });
-    window.addEventListener('resize', update, { passive: true });
+    window.addEventListener("scroll", update, { passive: true, capture: true });
+    window.addEventListener("resize", update, { passive: true });
 
     const ro = new ResizeObserver(() => update());
     ro.observe(document.documentElement);
     ro.observe(anchorRef.current);
 
     return () => {
-      window.removeEventListener('scroll', update, { capture: true });
-      window.removeEventListener('resize', update);
+      window.removeEventListener("scroll", update, { capture: true });
+      window.removeEventListener("resize", update);
       ro.disconnect();
     };
   }, [avoidOverflowClipping, position]);
@@ -148,7 +148,7 @@ export function DismissButton({
       className={cn(
         BASE_BUTTON_CLASSES,
         VARIANT_CLASSES[variant],
-        disabled && 'opacity-50 cursor-not-allowed',
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
       aria-label={ariaLabel}
@@ -176,7 +176,7 @@ export function DismissButton({
         position,
         BASE_BUTTON_CLASSES,
         VARIANT_CLASSES[variant],
-        disabled && 'opacity-50 cursor-not-allowed',
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
       aria-label={ariaLabel}

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AlertCircle, Info, CheckCircle, AlertTriangle, Mail, Settings, User, Bell } from "lucide-react";
 import { ModalHeader } from "./ModalHeader";
 
-const meta = {
+const meta: Meta<typeof ModalHeader> = {
   title: "Components/ModalHeader",
   component: ModalHeader,
   tags: ["autodocs"],
@@ -34,10 +34,10 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof ModalHeader>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof ModalHeader>;
 
 export const Default: Story = {
   args: {

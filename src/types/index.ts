@@ -2,7 +2,7 @@
  * @fileoverview Shared type definitions for overlay components.
  */
 
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 /**
  * Base props shared by all overlay components (Modal, BottomSheet).

@@ -14,7 +14,7 @@
  * in the app's global CSS, which reserves space for the scrollbar.
  */
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 let lockCount = 0;
 let originalOverflow: string | null = null;
@@ -24,7 +24,7 @@ let originalOverflow: string | null = null;
  * Uses ref-counting to support multiple concurrent locks.
  */
 export function lockBodyScroll(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   lockCount += 1;
   if (lockCount > 1) return;
@@ -33,7 +33,7 @@ export function lockBodyScroll(): void {
   originalOverflow = document.body.style.overflow;
 
   // Simply hide overflow - scrollbar-gutter handles layout stability
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow = "hidden";
 }
 
 /**
@@ -41,14 +41,14 @@ export function lockBodyScroll(): void {
  * Only unlocks when all locks have been released (ref-counting).
  */
 export function unlockBodyScroll(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   if (lockCount === 0) return;
 
   lockCount -= 1;
   if (lockCount > 0) return;
 
   // Restore original overflow
-  document.body.style.overflow = originalOverflow ?? '';
+  document.body.style.overflow = originalOverflow ?? "";
   originalOverflow = null;
 }
 

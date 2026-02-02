@@ -4,19 +4,19 @@
  * Wraps ModalWrapper with standard styling.
  */
 
-'use client';
+"use client";
 
-import React from 'react';
-import { ModalWrapper } from './ModalWrapper';
-import { cn } from '../utils';
-import type { ModalProps, ModalSize } from './types';
+import React from "react";
+import { ModalWrapper } from "./ModalWrapper";
+import { cn } from "../utils";
+import type { ModalProps, ModalSize } from "./types";
 
 const sizeClasses: Record<ModalSize, string> = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
-  full: 'max-w-[90vw]',
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  full: "max-w-[90vw]",
 };
 
 /**
@@ -52,7 +52,7 @@ export function Modal({
   isOpen,
   onClose,
   children,
-  size = 'md',
+  size = "md",
   className,
   overlayClassName,
   padding = true,
@@ -65,7 +65,7 @@ export function Modal({
   ariaDescribedBy,
   ariaLabel,
 }: ModalProps) {
-  const contentClassName = cn('bg-white rounded-2xl shadow-xl w-full', sizeClasses[size], padding && 'p-6', className);
+  const contentClassName = cn("bg-white rounded-2xl shadow-xl w-full", sizeClasses[size], padding && "p-6", className);
 
   return (
     <ModalWrapper

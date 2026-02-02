@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { ModalWrapper } from "./ModalWrapper";
 
-const meta = {
+const meta: Meta<typeof ModalWrapper> = {
   title: "Components/ModalWrapper",
   component: ModalWrapper,
   tags: ["autodocs"],
@@ -31,10 +31,10 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-} satisfies Meta<typeof ModalWrapper>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof ModalWrapper>;
 
 // Interactive wrapper for controlled modal stories
 function ModalWrapperDemo({

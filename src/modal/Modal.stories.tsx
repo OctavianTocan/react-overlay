@@ -5,7 +5,7 @@ import { Modal } from "./Modal";
 import { ModalHeader } from "./ModalHeader";
 import { ModalDescription } from "./ModalDescription";
 
-const meta = {
+const meta: Meta<typeof Modal> = {
   title: "Components/Modal",
   component: Modal,
   tags: ["autodocs"],
@@ -39,10 +39,10 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-} satisfies Meta<typeof Modal>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof Modal>;
 
 // Interactive wrapper for controlled modal stories
 function ModalDemo({ children, ...props }: Omit<React.ComponentProps<typeof Modal>, "open" | "onDismiss">) {

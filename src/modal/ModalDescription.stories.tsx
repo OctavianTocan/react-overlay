@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ModalDescription } from "./ModalDescription";
 
-const meta = {
+const meta: Meta<typeof ModalDescription> = {
   title: "Components/ModalDescription",
   component: ModalDescription,
   tags: ["autodocs"],
@@ -25,10 +25,10 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof ModalDescription>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof ModalDescription>;
 
 export const Default: Story = {
   args: {

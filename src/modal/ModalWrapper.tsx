@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useBodyScrollLock } from "../hooks";
 import { cn } from "../utils";
@@ -53,7 +53,7 @@ export function ModalWrapper({
 }: ModalWrapperProps) {
   // Support both new (open/onDismiss) and deprecated (isOpen/onClose) props
   const resolvedOpen = open ?? isOpen ?? false;
-  const resolvedOnDismiss = onDismiss ?? onClose ?? (() => {});
+  const resolvedOnDismiss = useMemo(() => onDismiss ?? onClose ?? (() => {}), [onDismiss, onClose]);
 
   // Centralized body scroll lock (ref-counted, preserves scrollbar gutter).
   useBodyScrollLock(resolvedOpen);
@@ -109,7 +109,7 @@ export function ModalWrapper({
           key="modal-overlay"
           className={cn(
             "fixed inset-0 w-screen bg-black/50 flex items-center justify-center z-[1000] cursor-default",
-            overlayClassName,
+            overlayClassName
           )}
           data-testid={testId}
           {...overlayAnimation}

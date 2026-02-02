@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { DismissButton } from "./DismissButton";
 
-const meta = {
+const meta: Meta<typeof DismissButton> = {
   title: "Components/DismissButton",
   component: DismissButton,
   tags: ["autodocs"],
@@ -35,10 +35,10 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-} satisfies Meta<typeof DismissButton>;
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof DismissButton>;
 
 // Wrapper to demonstrate button in context
 function ButtonDemo({

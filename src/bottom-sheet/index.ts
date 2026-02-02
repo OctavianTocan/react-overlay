@@ -2,7 +2,7 @@
  * @fileoverview BottomSheet feature exports.
  */
 
-export { BottomSheet } from './BottomSheet';
+export { BottomSheet } from "./BottomSheet";
 
 export type {
   BottomSheetProps,
@@ -15,6 +15,6 @@ export type {
   SnapToOptions,
   SpringEvent,
   SpringEventType,
-} from './types';
+} from "./types";
 
-export { COLORS, DURATION, RADIUS, SPACING, SPRING } from './constants';
+export { COLORS, DURATION, RADIUS, SPACING, SPRING } from "./constants";

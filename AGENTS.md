@@ -5,27 +5,32 @@ This file provides essential information for agentic coding agents working in th
 ## Commands
 
 ### Development & Build
+
 - `pnpm run build` - Build library with tsup (outputs ESM, CJS, DTS)
 - `pnpm run dev` - Watch mode for development
 - `pnpm run typecheck` - Run TypeScript type checking
 - `pnpm run clean` - Remove dist/ and coverage/ directories
 
 ### Testing
+
 - `pnpm run test` - Run all tests with Vitest
 - `pnpm run test:watch` - Watch mode for tests
 - `pnpm run test:coverage` - Generate coverage report
 - **Run single test**: `pnpm vitest run src/__tests__/Modal.test.tsx`
 
 ### Quality
+
 - `pnpm run lint` - ESLint check on src/ directory
 
 ### Documentation
+
 - `pnpm run storybook` - Start Storybook dev server (port 6006)
 - `pnpm run build-storybook` - Build static Storybook
 
 ## Code Style
 
 ### Imports
+
 - Use ES modules: `import { foo } from 'bar'`
 - Type imports: `import type { FooType } from './types'`
 - React imports: `import React from 'react'`
@@ -33,12 +38,14 @@ This file provides essential information for agentic coding agents working in th
 - Group imports: external deps → internal → types
 
 ### Formatting
+
 - 2-space indentation
 - Trailing commas in multi-line arrays/objects
 - Max ~100 characters per line
 - No existing linter configs - follow existing patterns
 
 ### TypeScript
+
 - Strict mode enabled (`strict: true`)
 - Explicit interfaces for component props: `interface Props { ... }`
 - `ReactNode` for children props
@@ -47,6 +54,7 @@ This file provides essential information for agentic coding agents working in th
 - Array types: `Type[]` not `Array<Type>`
 
 ### Naming
+
 - Components: PascalCase (`Modal`, `BottomSheet`)
 - Functions/hooks: camelCase (`useBodyScrollLock`)
 - Variables: camelCase
@@ -55,12 +63,14 @@ This file provides essential information for agentic coding agents working in th
 - Story files: `{Component}.stories.{ts,tsx}`
 
 ### Error Handling
+
 - Type guards for runtime checks: `typeof value === 'string'`
 - Optional chaining: `foo?.bar?.baz`
 - Nullish coalescing: `foo ?? defaultValue`
 - Try/catch for async operations
 
 ### Components
+
 - Functional components with hooks
 - Props destructuring in function signature
 - Use `forwardRef` when exposing refs
@@ -70,6 +80,7 @@ This file provides essential information for agentic coding agents working in th
 - Motion for animations (framer-motion's `motion` package)
 
 ### Accessibility
+
 - Semantic HTML elements
 - Keyboard navigation support (Enter, Escape, arrows)
 - ARIA attributes: `aria-label`, `aria-labelledby`, `aria-describedby`
@@ -78,6 +89,7 @@ This file provides essential information for agentic coding agents working in th
 - Screen reader text with `aria-hidden="true"` for decorative icons
 
 ### Testing
+
 - Test library: Vitest + @testing-library/react
 - Test files in `src/__tests__/` directory
 - `describe` for test suites, `it` for individual tests
@@ -86,6 +98,7 @@ This file provides essential information for agentic coding agents working in th
 - Coverage excludes: tests, stories, index files, types
 
 ### File Organization
+
 ```
 src/
   ├── __tests__/         # Test files
@@ -103,33 +116,46 @@ src/
 ```
 
 ### CSS/Tailwind
+
 - Use `cn()` utility for class merging (clsx + tailwind-merge)
 - Inline styles only for dynamic properties
 - `data-ro-scroll` attribute for custom scrollbar styling
 - Motion respects `prefers-reduced-motion`
 
 ### Common Patterns
+
 - Legacy API support: `isOpen`/`onClose` aliases for `open`/`onDismiss`
 - Ref-counting for scroll lock: `useBodyScrollLock` handles concurrent overlays
 - Spring animations with cubic-bezier easing: `cubic-bezier(0.4, 0.0, 0.2, 1)`
 - Safe area insets: `env(safe-area-inset-bottom, 0px)` for mobile
 
 ### Documentation
+
 - JSDoc for all public APIs with `@param`, `@returns`, `@example`
 - File headers with `@fileoverview` and `@description`
 - Examples in JSDoc blocks
 - Table exports in main `index.ts` with descriptions
 
 ### Peer Dependencies
+
 - React 18/19, react-dom
 - motion (animations)
 - clsx, tailwind-merge (CSS utilities)
 - lucide-react (optional, for icons)
 
 ## Before Committing
+
 Run typecheck and tests to ensure code quality:
+
 ```bash
 pnpm run typecheck
 pnpm run test
 pnpm run lint
+```
+
+Run visual regression test to ensure no unintended UI changes:
+
+```bash
+pnpm run storybook:build
+# Visual regression workflow will run automatically on PR creation
 ```

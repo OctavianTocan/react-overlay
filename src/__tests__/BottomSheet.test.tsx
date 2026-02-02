@@ -1,8 +1,17 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { BottomSheet } from "../index";
 
 const ANIMATION_DURATION_MS = 300;
+
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.runOnlyPendingTimers();
+  vi.useRealTimers();
+});
 
 describe("BottomSheet", () => {
   it("renders when open", () => {
@@ -25,7 +34,7 @@ describe("BottomSheet", () => {
     expect(screen.queryByText("Sheet content")).not.toBeInTheDocument();
   });
 
-  it("calls onDismiss when clicking backdrop", async () => {
+  it("calls onDismiss when clicking backdrop", () => {
     const onDismiss = vi.fn();
     render(
       <BottomSheet open={true} onDismiss={onDismiss} testId="bottom-sheet">
@@ -34,15 +43,11 @@ describe("BottomSheet", () => {
     );
 
     fireEvent.click(screen.getByTestId("bottom-sheet-backdrop"));
-    await waitFor(
-      () => {
-        expect(onDismiss).toHaveBeenCalledTimes(1);
-      },
-      { timeout: ANIMATION_DURATION_MS + 100 }
-    );
+    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onDismiss on Escape key", async () => {
+  it("calls onDismiss on Escape key", () => {
     const onDismiss = vi.fn();
     render(
       <BottomSheet open={true} onDismiss={onDismiss}>
@@ -51,15 +56,11 @@ describe("BottomSheet", () => {
     );
 
     fireEvent.keyDown(document, { key: "Escape" });
-    await waitFor(
-      () => {
-        expect(onDismiss).toHaveBeenCalledTimes(1);
-      },
-      { timeout: ANIMATION_DURATION_MS + 100 }
-    );
+    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
-  it("supports legacy onClose prop", async () => {
+  it("supports legacy onClose prop", () => {
     const onClose = vi.fn();
     render(
       <BottomSheet open={true} onClose={onClose}>
@@ -69,12 +70,8 @@ describe("BottomSheet", () => {
 
     expect(screen.getByText("Legacy onClose prop")).toBeInTheDocument();
     fireEvent.keyDown(document, { key: "Escape" });
-    await waitFor(
-      () => {
-        expect(onClose).toHaveBeenCalledTimes(1);
-      },
-      { timeout: ANIMATION_DURATION_MS + 100 }
-    );
+    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -133,6 +130,7 @@ describe("BottomSheet Dismiss Button", () => {
 
     const button = screen.getByLabelText("Dismiss");
     fireEvent.click(button);
+    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 

@@ -74,6 +74,8 @@ export type {
 
 // Shared hooks
 export { useBodyScrollLock, lockBodyScroll, unlockBodyScroll } from "./hooks";
+export { useVisualViewport } from "./hooks";
+export type { VisualViewportState } from "./hooks";
 
 // Shared utilities
 export { cn } from "./utils";

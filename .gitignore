@@ -21,3 +21,7 @@ Thumbs.db
 
 # Test coverage
 coverage/
+
+# Lost Pixel (current and difference are generated, baseline is committed)
+.lostpixel/current/
+.lostpixel/difference/

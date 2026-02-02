@@ -2,6 +2,16 @@
  * @fileoverview Type definitions for BottomSheet component.
  */
 
+import type { DismissButtonProps } from "../modal/DismissButton";
+
+/** Placement options for dismiss button */
+export type DismissButtonPlacement = "left" | "right";
+
+/** Configuration for dismiss button */
+export type BottomSheetDismissButton =
+  | { show: false }
+  | { show: true; position: DismissButtonPlacement; props?: Omit<DismissButtonProps, "onClick"> };
+
 /** Measurements available to snap point calculations */
 export interface SnapPointMeasurements {
   /** Height of the sticky header, if present */
@@ -85,6 +95,33 @@ export interface BottomSheetProps {
   footer?: React.ReactNode;
   /** @deprecated Use header prop instead. Optional title displayed at the top of the sheet */
   title?: string;
+
+  // Dismiss Button
+  /**
+   * Configuration for dismiss/close button
+   *
+   * @example Show button on right side
+   * ```tsx
+   * <BottomSheet dismissButton={{ show: true, position: 'right' }} />
+   * ```
+   *
+   * @example Show button on left side with custom aria-label
+   * ```tsx
+   * <BottomSheet
+   *   dismissButton={{
+   *     show: true,
+   *     position: 'left',
+   *     props: { "aria-label": "Close dialog" }
+   *   }}
+   * />
+   * ```
+   *
+   * @example Hide button (default)
+   * ```tsx
+   * <BottomSheet dismissButton={{ show: false }} />
+   * ```
+   */
+  dismissButton?: BottomSheetDismissButton;
 
   // Sibling content
   /** Content rendered as sibling to backdrop, outside the overlay */

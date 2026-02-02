@@ -19,6 +19,7 @@ import {
 } from "./constants";
 import type { BottomSheetProps, BottomSheetRef, SnapPointMeasurements, SnapPointState } from "./types";
 import { useBodyScrollLock, useVisualViewport } from "../hooks";
+import { DismissButton } from "../modal/DismissButton";
 
 // ============================================================================
 // Helper functions
@@ -88,6 +89,7 @@ function BottomSheetContent({
   sheetRef,
   keyboardBehavior = "ignore",
   keyboardSnapPoint = 0,
+  dismissButton,
 }: BottomSheetContentProps): React.JSX.Element | null {
   // Support both testId (new) and testID (deprecated) with testId taking precedence
   const resolvedTestId = testId ?? testID;
@@ -652,6 +654,15 @@ function BottomSheetContent({
             transitionDuration !== null ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)` : "none",
         }}
       >
+        {dismissButton?.show && (
+          <DismissButton
+            onClick={() => animateClose("custom")}
+            position={dismissButton.position === "left" ? "absolute top-4 left-4 z-10" : "absolute top-4 right-4 z-10"}
+            avoidOverflowClipping={false}
+            {...dismissButton.props}
+          />
+        )}
+
         {/* Drag Handle Zone */}
         <div style={styles.handleZone} data-bottom-sheet-drag-zone>
           <div

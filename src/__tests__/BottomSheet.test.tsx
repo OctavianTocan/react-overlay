@@ -267,6 +267,7 @@ describe("BottomSheet Sticky Header", () => {
     const stickyHeader = screen.getByText("Sticky Header Content");
     const stickyHeaderContainer = stickyHeader.parentElement;
 
+    expect(stickyHeaderContainer).not.toBeNull();
     expect(stickyHeaderContainer).toBeInTheDocument();
     // Check that the parent container has position sticky
     expect(stickyHeaderContainer).toHaveStyle({ position: 'sticky' });

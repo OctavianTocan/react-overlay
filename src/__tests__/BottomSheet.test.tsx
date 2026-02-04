@@ -180,3 +180,95 @@ describe("BottomSheet Dismiss Button", () => {
     expect(screen.getByTestId("custom-dismiss-button")).toBeInTheDocument();
   });
 });
+
+describe("BottomSheet Sticky Header", () => {
+  it("renders stickyHeader inside scrollable area", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} stickyHeader={<div>Sticky Header Content</div>}>
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    const stickyHeader = screen.getByText("Sticky Header Content");
+    expect(stickyHeader).toBeInTheDocument();
+
+    // Verify it's inside the scrollable area
+    const scrollableArea = document.querySelector('[data-bottom-sheet-content]');
+    expect(scrollableArea).toContainElement(stickyHeader);
+  });
+
+  it("does not render stickyHeader when prop is not provided", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}}>
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    // Check that the sticky header container is not present
+    const scrollableArea = document.querySelector('[data-bottom-sheet-content]');
+    expect(scrollableArea).toBeInTheDocument();
+    expect(scrollableArea?.children.length).toBe(1); // Only content div
+  });
+
+  it("renders stickyHeader alongside regular header", () => {
+    render(
+      <BottomSheet
+        open={true}
+        onDismiss={() => {}}
+        header={<h2>Regular Header</h2>}
+        stickyHeader={<div>Sticky Header Content</div>}
+      >
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    const regularHeader = screen.getByText("Regular Header");
+    const stickyHeader = screen.getByText("Sticky Header Content");
+
+    expect(regularHeader).toBeInTheDocument();
+    expect(stickyHeader).toBeInTheDocument();
+
+    // Regular header should be outside the scrollable area
+    const scrollableArea = document.querySelector('[data-bottom-sheet-content]');
+    expect(scrollableArea).not.toContainElement(regularHeader);
+
+    // Sticky header should be inside the scrollable area
+    expect(scrollableArea).toContainElement(stickyHeader);
+  });
+
+  it("renders stickyHeader with footer", () => {
+    render(
+      <BottomSheet
+        open={true}
+        onDismiss={() => {}}
+        stickyHeader={<div>Sticky Header Content</div>}
+        footer={<button>Footer Button</button>}
+      >
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    expect(screen.getByText("Sticky Header Content")).toBeInTheDocument();
+    expect(screen.getByText("Footer Button")).toBeInTheDocument();
+
+    // Verify sticky header is inside scroll area
+    const scrollableArea = document.querySelector('[data-bottom-sheet-content]');
+    const stickyHeader = screen.getByText("Sticky Header Content");
+    expect(scrollableArea).toContainElement(stickyHeader);
+  });
+
+  it("renders stickyHeader with proper sticky positioning styles", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} stickyHeader={<div>Sticky Header Content</div>}>
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    const stickyHeader = screen.getByText("Sticky Header Content");
+    const stickyHeaderContainer = stickyHeader.parentElement;
+
+    expect(stickyHeaderContainer).toBeInTheDocument();
+    // Check that the parent container has position sticky
+    expect(stickyHeaderContainer).toHaveStyle({ position: 'sticky' });
+  });
+});

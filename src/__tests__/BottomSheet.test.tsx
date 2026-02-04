@@ -194,6 +194,7 @@ describe("BottomSheet Sticky Header", () => {
 
     // Verify it's inside the scrollable area
     const scrollableArea = document.querySelector('[data-bottom-sheet-content]');
+    expect(scrollableArea).not.toBeNull();
     expect(scrollableArea).toContainElement(stickyHeader);
   });
 
@@ -230,6 +231,7 @@ describe("BottomSheet Sticky Header", () => {
 
     // Regular header should be outside the scrollable area
     const scrollableArea = document.querySelector('[data-bottom-sheet-content]');
+    expect(scrollableArea).not.toBeNull();
     expect(scrollableArea).not.toContainElement(regularHeader);
 
     // Sticky header should be inside the scrollable area
@@ -254,6 +256,7 @@ describe("BottomSheet Sticky Header", () => {
     // Verify sticky header is inside scroll area
     const scrollableArea = document.querySelector('[data-bottom-sheet-content]');
     const stickyHeader = screen.getByText("Sticky Header Content");
+    expect(scrollableArea).not.toBeNull();
     expect(scrollableArea).toContainElement(stickyHeader);
   });
 

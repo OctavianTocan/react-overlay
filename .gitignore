@@ -4,6 +4,7 @@ storybook-static/
 
 # Dependencies (managed by workspace root)
 node_modules/
+package-lock.json
 
 # TypeScript
 *.tsbuildinfo

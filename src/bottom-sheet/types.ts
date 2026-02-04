@@ -164,6 +164,22 @@ export interface BottomSheetProps {
    * ```
    */
   footer?: React.ReactNode;
+  /**
+   * Whether to show the header border.
+   * - `true` (default): Shows the default border (#E5E5E5)
+   * - `false`: No border
+   * - `string`: Custom border color
+   * @default true
+   * @example Hide border
+   * ```tsx
+   * <BottomSheet header={<h2>Title</h2>} headerBorder={false} ... />
+   * ```
+   * @example Custom border color
+   * ```tsx
+   * <BottomSheet header={<h2>Title</h2>} headerBorder="#FF0000" ... />
+   * ```
+   */
+  headerBorder?: boolean | string;
   /** @deprecated Use header prop instead. Optional title displayed at the top of the sheet */
   title?: string;
 

@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { BottomSheet } from "../index";
 
 const ANIMATION_DURATION_MS = 300;
+// Time needed for initial animation (requestAnimationFrame + animation duration)
+const OPEN_ANIMATION_DELAY = 500;
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -12,6 +14,13 @@ afterEach(() => {
   vi.runOnlyPendingTimers();
   vi.useRealTimers();
 });
+
+/** Helper to wait for the bottom sheet to fully open */
+function waitForSheetToOpen() {
+  act(() => {
+    vi.advanceTimersByTime(OPEN_ANIMATION_DELAY);
+  });
+}
 
 describe("BottomSheet", () => {
   it("renders when open", () => {
@@ -42,8 +51,13 @@ describe("BottomSheet", () => {
       </BottomSheet>
     );
 
+    // Wait for open animation to complete
+    waitForSheetToOpen();
+
     fireEvent.click(screen.getByTestId("bottom-sheet-backdrop"));
-    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    act(() => {
+      vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    });
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
@@ -55,8 +69,13 @@ describe("BottomSheet", () => {
       </BottomSheet>
     );
 
+    // Wait for open animation to complete
+    waitForSheetToOpen();
+
     fireEvent.keyDown(document, { key: "Escape" });
-    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    act(() => {
+      vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    });
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
@@ -69,8 +88,14 @@ describe("BottomSheet", () => {
     );
 
     expect(screen.getByText("Legacy onClose prop")).toBeInTheDocument();
+
+    // Wait for open animation to complete
+    waitForSheetToOpen();
+
     fireEvent.keyDown(document, { key: "Escape" });
-    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    act(() => {
+      vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    });
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
@@ -128,9 +153,14 @@ describe("BottomSheet Dismiss Button", () => {
       </BottomSheet>
     );
 
+    // Wait for open animation to complete
+    waitForSheetToOpen();
+
     const button = screen.getByLabelText("Dismiss");
     fireEvent.click(button);
-    vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    act(() => {
+      vi.advanceTimersByTime(ANIMATION_DURATION_MS);
+    });
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
@@ -178,5 +208,37 @@ describe("BottomSheet Dismiss Button", () => {
     );
 
     expect(screen.getByTestId("custom-dismiss-button")).toBeInTheDocument();
+  });
+});
+
+describe("BottomSheet Header Border", () => {
+  it("renders default header border when headerBorder is not specified", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} header={<h2>Title</h2>}>
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    expect(screen.getByText("Title")).toBeInTheDocument();
+  });
+
+  it("renders header without border when headerBorder is false", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} header={<h2>Title</h2>} headerBorder={false}>
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    expect(screen.getByText("Title")).toBeInTheDocument();
+  });
+
+  it("renders header with custom border color when headerBorder is a string", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} header={<h2>Title</h2>} headerBorder="#FF0000">
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    expect(screen.getByText("Title")).toBeInTheDocument();
   });
 });

@@ -71,6 +71,7 @@ function BottomSheetContent({
   defaultSnap,
   header,
   footer,
+  headerBorder = true,
   title,
   sibling,
   blocking = true,
@@ -679,7 +680,20 @@ function BottomSheetContent({
         </div>
 
         {/* Header (Sticky) */}
-        {headerContent && <div style={styles.headerContainer}>{headerContent}</div>}
+        {headerContent && (
+          <div
+            style={{
+              ...styles.headerContainer,
+              ...(headerBorder === false
+                ? { borderBottomWidth: 0 }
+                : typeof headerBorder === "string"
+                  ? { borderBottomColor: headerBorder }
+                  : {}),
+            }}
+          >
+            {headerContent}
+          </div>
+        )}
 
         {/* Scrollable Content */}
         <div style={styles.scrollView} data-bottom-sheet-content data-ro-scroll>

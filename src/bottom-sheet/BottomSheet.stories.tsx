@@ -41,6 +41,10 @@ const meta: Meta<typeof BottomSheet> = {
       control: "number",
       description: "Index of snap point to use when keyboard opens",
     },
+    headerBorder: {
+      control: "text",
+      description: "Header border: true (default), false (no border), or a color string",
+    },
   },
   parameters: {
     layout: "fullscreen",
@@ -89,7 +93,7 @@ export const WithHeader: Story = {
   render: () => (
     <BottomSheetDemo
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Sheet Header</h2>
           <p className="text-sm text-gray-500">Sticky header content</p>
         </div>
@@ -130,7 +134,7 @@ export const WithHeaderAndFooter: Story = {
   render: () => (
     <BottomSheetDemo
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Complete Layout</h2>
         </div>
       }
@@ -455,7 +459,7 @@ export const FormSheet: Story = {
   render: () => (
     <BottomSheetDemo
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Add New Item</h2>
         </div>
       }
@@ -520,7 +524,7 @@ export const KeyboardAware: Story = {
       keyboardSnapPoint={0}
       buttonText="Open (Keyboard Aware)"
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Keyboard-Aware Form</h2>
           <p className="text-sm text-gray-500">Sheet snaps to 200px when keyboard opens</p>
         </div>
@@ -585,7 +589,7 @@ export const KeyboardAwareCustomSnapPoint: Story = {
       keyboardSnapPoint={1}
       buttonText="Open (Snaps to Middle)"
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Custom Keyboard Snap</h2>
           <p className="text-sm text-gray-500">Sheet snaps to 300px (middle) when keyboard opens</p>
         </div>
@@ -622,7 +626,7 @@ export const WithDismissButtonRight: Story = {
     <BottomSheetDemo
       dismissButton={{ show: true, position: "right" }}
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Sheet with Dismiss Button</h2>
         </div>
       }
@@ -644,7 +648,7 @@ export const WithDismissButtonLeft: Story = {
     <BottomSheetDemo
       dismissButton={{ show: true, position: "left" }}
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Left-Aligned Dismiss Button</h2>
         </div>
       }
@@ -672,7 +676,7 @@ export const DismissButtonWithCustomProps: Story = {
         },
       }}
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Custom Dismiss Button</h2>
         </div>
       }
@@ -696,7 +700,7 @@ export const DismissButtonWithHeader: Story = {
     <BottomSheetDemo
       dismissButton={{ show: true, position: "right" }}
       header={
-        <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+        <div className="flex items-center justify-between pb-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Custom Header</h2>
             <p className="text-sm text-gray-500">With dismiss button overlay</p>
@@ -719,7 +723,7 @@ export const DismissButtonHidden: Story = {
     <BottomSheetDemo
       dismissButton={{ show: false }}
       header={
-        <div className="pb-4 border-b border-gray-200">
+        <div className="pb-4">
           <h2 className="text-lg font-semibold text-gray-900">Dismiss Button Hidden</h2>
         </div>
       }
@@ -732,6 +736,50 @@ export const DismissButtonHidden: Story = {
         <p className="text-sm text-gray-500">
           Users can still close the sheet by clicking the backdrop, dragging down, or pressing Escape.
         </p>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const HeaderBorderHidden: Story = {
+  render: () => (
+    <BottomSheetDemo
+      headerBorder={false}
+      header={
+        <div className="pb-4">
+          <h2 className="text-lg font-semibold text-gray-900">No Header Border</h2>
+          <p className="text-sm text-gray-500">The header container has no border</p>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600">
+          This sheet uses <code>headerBorder={"{false}"}</code> to hide the default header border.
+        </p>
+        <p className="text-sm text-gray-500">
+          Useful when you want a seamless transition between header and content, or when adding your own custom styling.
+        </p>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const HeaderBorderCustomColor: Story = {
+  render: () => (
+    <BottomSheetDemo
+      headerBorder="#3B82F6"
+      header={
+        <div className="pb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Custom Border Color</h2>
+          <p className="text-sm text-gray-500">Blue border (#3B82F6)</p>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        <p className="text-gray-600">
+          This sheet uses <code>headerBorder="#3B82F6"</code> to set a custom blue border color.
+        </p>
+        <p className="text-sm text-gray-500">Pass any valid CSS color value to customize the header border.</p>
       </div>
     </BottomSheetDemo>
   ),

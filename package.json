@@ -1,6 +1,6 @@
 {
   "name": "@octavian-tocan/react-overlay",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Unified overlay components for React: BottomSheet with snap points and Modal with animations",
   "author": "Octavian Tocan",
   "license": "MIT",

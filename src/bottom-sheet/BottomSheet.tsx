@@ -90,6 +90,7 @@ function BottomSheetContent({
   keyboardBehavior = "ignore",
   keyboardSnapPoint = 0,
   dismissButton,
+  stickyHeader,
 }: BottomSheetContentProps): React.JSX.Element | null {
   // Support both testId (new) and testID (deprecated) with testId taking precedence
   const resolvedTestId = testId ?? testID;
@@ -678,11 +679,12 @@ function BottomSheetContent({
           </div>
         </div>
 
-        {/* Header (Sticky) */}
+        {/* Header */}
         {headerContent && <div style={styles.headerContainer}>{headerContent}</div>}
 
         {/* Scrollable Content */}
         <div style={styles.scrollView} data-bottom-sheet-content data-ro-scroll>
+          {stickyHeader && <div style={styles.stickyHeaderContainer}>{stickyHeader}</div>}
           <div style={styles.scrollContent}>{children}</div>
         </div>
 
@@ -787,6 +789,18 @@ const styles: Record<string, React.CSSProperties> = {
   },
   headerContainer: {
     flexShrink: 0,
+    paddingLeft: `${SPACING.lg}px`,
+    paddingRight: `${SPACING.lg}px`,
+    paddingBottom: `${SPACING.sm}px`,
+    borderBottomWidth: "1px",
+    borderBottomStyle: "solid",
+    borderBottomColor: COLORS.border.subtle,
+  },
+  stickyHeaderContainer: {
+    position: "sticky",
+    top: 0,
+    zIndex: 1,
+    backgroundColor: COLORS.surface.card,
     paddingLeft: `${SPACING.lg}px`,
     paddingRight: `${SPACING.lg}px`,
     paddingBottom: `${SPACING.sm}px`,

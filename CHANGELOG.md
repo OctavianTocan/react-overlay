@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-02-03
+
+### Added
+
+- **BottomSheet:** Add `stickyHeader` for in-sheet sticky navigation while scrolling.
+
+### Documentation
+
+- **docs:** Document in-sheet sticky headers in API and examples.
+
 ## [1.2.0] - 2026-02-02
 
 ### Added

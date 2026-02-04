@@ -149,13 +149,22 @@ export interface BottomSheetProps {
 
   // Header/Footer
   /**
-   * Sticky header content
+   * Header content rendered above the scrollable area
    * @example
    * ```tsx
    * <BottomSheet header={<h2>Sheet Title</h2>} ... />
    * ```
    */
   header?: React.ReactNode;
+  /**
+   * Sticky header content rendered inside the scrollable area.
+   * Useful for in-sheet sticky navigation that stays visible while scrolling.
+   * @example
+   * ```tsx
+   * <BottomSheet stickyHeader={<Tabs />} ... />
+   * ```
+   */
+  stickyHeader?: React.ReactNode;
   /**
    * Sticky footer content
    * @example

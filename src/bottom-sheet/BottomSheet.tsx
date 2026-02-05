@@ -115,6 +115,8 @@ function BottomSheetContent({
   const backdropElementRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
+  const footerContainerRef = useRef<HTMLDivElement>(null);
 
   // ========== Computed Values ==========
   const maxH = maxHeightProp ?? windowHeight * 0.9;
@@ -682,6 +684,7 @@ function BottomSheetContent({
         {/* Header (Sticky) */}
         {headerContent && (
           <div
+            ref={headerContainerRef}
             style={{
               ...styles.headerContainer,
               ...(headerBorder === false
@@ -701,7 +704,11 @@ function BottomSheetContent({
         </div>
 
         {/* Footer (Sticky) */}
-        {footer && <div style={styles.footerContainer}>{footer}</div>}
+        {footer && (
+          <div ref={footerContainerRef} style={styles.footerContainer}>
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

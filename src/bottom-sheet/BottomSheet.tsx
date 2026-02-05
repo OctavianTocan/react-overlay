@@ -386,13 +386,20 @@ function BottomSheetContent({
       const deltaY = dragStartYRef.current - y;
       const deltaTime = Date.now() - dragStartTimeRef.current;
       const velocity = deltaTime > 0 ? deltaY / deltaTime : 0;
-      const currentHeight = currentHeightRef.current;
-      const minSnap = snapPoints[0] ?? 100;
 
-      const draggedDownDistance = dragStartHeightRef.current - currentHeight;
+      // Effective height accounts for the Y offset
+      const effectiveHeight = currentHeightRef.current - sheetOffsetY;
+      const minSnap = snapPoints[0] ?? 100;
+      const protectedH = getProtectedHeight(headerContainerRef, footerContainerRef, HANDLE_HEIGHT);
+
+      const draggedDownDistance = dragStartHeightRef.current - effectiveHeight;
       const shouldDismiss =
-        (draggedDownDistance > DISMISS_THRESHOLD_PX && currentHeight < minSnap + 50) ||
-        (velocity < -VELOCITY_THRESHOLD && currentHeight < minSnap + 100);
+        (draggedDownDistance > DISMISS_THRESHOLD_PX && effectiveHeight < minSnap + 50) ||
+        (velocity < -VELOCITY_THRESHOLD && effectiveHeight < minSnap + 100) ||
+        sheetOffsetY > DISMISS_THRESHOLD_PX;
+
+      // Reset offset before animating
+      setSheetOffsetY(0);
 
       if (shouldDismiss) {
         animateClose("dragging");
@@ -401,14 +408,14 @@ function BottomSheetContent({
 
       let targetSnap: number;
       if (Math.abs(velocity) > SNAP_VELOCITY_THRESHOLD) {
-        targetSnap = findSnapPointInDirection(currentHeight, velocity, snapPoints);
+        targetSnap = findSnapPointInDirection(currentHeightRef.current, velocity, snapPoints);
       } else {
-        targetSnap = findClosestSnapPoint(currentHeight, snapPoints);
+        targetSnap = findClosestSnapPoint(currentHeightRef.current, snapPoints);
       }
 
       animateToHeight(targetSnap, "dragging");
     },
-    [snapPoints, animateClose, animateToHeight]
+    [snapPoints, animateClose, animateToHeight, sheetOffsetY]
   );
 
   // ========== Touch Event Handlers ==========

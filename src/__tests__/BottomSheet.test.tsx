@@ -242,3 +242,102 @@ describe("BottomSheet Header Border", () => {
     expect(screen.getByText("Title")).toBeInTheDocument();
   });
 });
+
+describe("BottomSheet Sticky Header/Footer Collapse", () => {
+  it("keeps footer stationary while content collapses during drag", () => {
+    render(
+      <BottomSheet
+        open={true}
+        onDismiss={() => {}}
+        header={<div style={{ height: "50px" }}>Header</div>}
+        footer={<div style={{ height: "60px" }}>Footer</div>}
+        snapPoints={[400]}
+        testId="bottom-sheet"
+      >
+        <div style={{ height: "200px" }}>Content</div>
+      </BottomSheet>
+    );
+
+    waitForSheetToOpen();
+
+    // The handle has data-bottom-sheet-handle attribute
+    const handle = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+    expect(handle).not.toBeNull();
+
+    // The sheet is the element with position: absolute and bottom: 0px (the main sheet container)
+    const overlay = document.querySelector('[data-testid="bottom-sheet"]') as HTMLElement;
+    // Get all direct child divs and find the sheet (which has flex-direction: column)
+    const sheetCandidates = overlay.querySelectorAll(":scope > div");
+    // The sheet is the one that contains the handle (not the backdrop)
+    const sheet = Array.from(sheetCandidates).find((el) =>
+      el.querySelector("[data-bottom-sheet-handle]")
+    ) as HTMLElement;
+    expect(sheet).not.toBeNull();
+
+    // Get initial height
+    const initialHeight = parseInt(sheet.style.height, 10);
+    expect(initialHeight).toBeGreaterThan(0);
+
+    // Simulate drag start on handle
+    fireEvent.pointerDown(handle, { clientY: 100, pointerId: 1 });
+
+    // Simulate drag down by 50px (should only collapse content, not move sheet)
+    fireEvent.pointerMove(handle, { clientY: 150, pointerId: 1 });
+
+    // Sheet height should decrease but transform should be 0 (footer stays in place)
+    const currentHeight = parseInt(sheet.style.height, 10);
+    expect(currentHeight).toBeLessThan(initialHeight);
+
+    // The sheet should not have a Y transform yet (content is collapsing, not sheet moving)
+    const transform = sheet.style.transform;
+    expect(transform).toBe("translateY(0px)");
+
+    // Clean up
+    fireEvent.pointerUp(handle, { clientY: 150, pointerId: 1 });
+  });
+
+  it("starts moving sheet down after content is fully collapsed", () => {
+    render(
+      <BottomSheet
+        open={true}
+        onDismiss={() => {}}
+        header={<div style={{ height: "50px" }}>Header</div>}
+        footer={<div style={{ height: "60px" }}>Footer</div>}
+        snapPoints={[400]}
+        skipInitialTransition
+        testId="bottom-sheet"
+      >
+        <div style={{ height: "200px" }}>Content</div>
+      </BottomSheet>
+    );
+
+    waitForSheetToOpen();
+
+    // The handle has data-bottom-sheet-handle attribute
+    const handle = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+    expect(handle).not.toBeNull();
+
+    // The sheet is the element containing the handle
+    const overlay = document.querySelector('[data-testid="bottom-sheet"]') as HTMLElement;
+    const sheetCandidates = overlay.querySelectorAll(":scope > div");
+    const sheet = Array.from(sheetCandidates).find((el) =>
+      el.querySelector("[data-bottom-sheet-handle]")
+    ) as HTMLElement;
+    expect(sheet).not.toBeNull();
+
+    // Simulate drag start
+    fireEvent.pointerDown(handle, { clientY: 100, pointerId: 1 });
+
+    // Drag down significantly (past content collapse point)
+    // Header (50) + Footer (60) + Handle (32) = 142px protected
+    // Starting at 400px, dragging 300px should collapse content AND start moving sheet
+    fireEvent.pointerMove(handle, { clientY: 400, pointerId: 1 });
+
+    // Sheet should now have a Y transform (it's moving down)
+    const transform = sheet.style.transform;
+    expect(transform).toMatch(/translateY\(\d+px\)/);
+
+    // Clean up
+    fireEvent.pointerUp(handle, { clientY: 400, pointerId: 1 });
+  });
+});

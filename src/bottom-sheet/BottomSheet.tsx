@@ -54,6 +54,16 @@ function findSnapPointInDirection(currentHeight: number, velocity: number, snapP
   return sorted[sorted.length - 1]!;
 }
 
+function getProtectedHeight(
+  headerRef: React.RefObject<HTMLDivElement>,
+  footerRef: React.RefObject<HTMLDivElement>,
+  handleHeight: number
+): number {
+  const headerH = headerRef.current?.offsetHeight ?? 0;
+  const footerH = footerRef.current?.offsetHeight ?? 0;
+  return headerH + footerH + handleHeight;
+}
+
 // ============================================================================
 // BottomSheetContent (internal)
 // ============================================================================
@@ -101,6 +111,7 @@ function BottomSheetContent({
   const [backdropOpacity, setBackdropOpacity] = useState(0);
   const [_isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDuration, setTransitionDuration] = useState<number | null>(null);
+  const [sheetOffsetY, setSheetOffsetY] = useState(0);
 
   // ========== Refs ==========
   const currentHeightRef = useRef<number>(0);

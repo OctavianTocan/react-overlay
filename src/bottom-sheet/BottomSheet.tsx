@@ -55,8 +55,8 @@ function findSnapPointInDirection(currentHeight: number, velocity: number, snapP
 }
 
 function getProtectedHeight(
-  headerRef: React.RefObject<HTMLDivElement>,
-  footerRef: React.RefObject<HTMLDivElement>,
+  headerRef: React.RefObject<HTMLDivElement | null>,
+  footerRef: React.RefObject<HTMLDivElement | null>,
   handleHeight: number
 ): number {
   const headerH = headerRef.current?.offsetHeight ?? 0;
@@ -360,9 +360,20 @@ function BottomSheetContent({
       if (!isDraggingRef.current) return;
 
       const deltaY = dragStartYRef.current - y;
-      const newHeight = clamp(dragStartHeightRef.current + deltaY, 50, maxH + 50);
+      const rawHeight = dragStartHeightRef.current + deltaY;
+      const protectedH = getProtectedHeight(headerContainerRef, footerContainerRef, HANDLE_HEIGHT);
 
-      setHeightImmediate(newHeight);
+      if (rawHeight >= protectedH) {
+        // Content is still collapsing, no offset needed
+        const newHeight = clamp(rawHeight, protectedH, maxH + 50);
+        setHeightImmediate(newHeight);
+        setSheetOffsetY(0);
+      } else {
+        // Content fully collapsed, start moving sheet down
+        const offset = protectedH - rawHeight;
+        setHeightImmediate(protectedH);
+        setSheetOffsetY(Math.max(0, offset));
+      }
     },
     [maxH, setHeightImmediate]
   );

@@ -675,8 +675,11 @@ function BottomSheetContent({
           ...styles.sheet,
           height: `${sheetHeight}px`,
           maxHeight: `${maxH}px`,
+          transform: `translateY(${sheetOffsetY}px)`,
           transition:
-            transitionDuration !== null ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)` : "none",
+            transitionDuration !== null
+              ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1), transform ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)`
+              : "none",
         }}
       >
         {dismissButton?.show && (

@@ -222,6 +222,8 @@ function BottomSheetContent({
 
   const animateToHeight = useCallback(
     (toHeight: number, source: "dragging" | "custom" = "custom") => {
+      setSheetOffsetY(0); // Reset offset when snapping
+
       const clampedHeight = clamp(toHeight, snapPoints[0] ?? 100, snapPoints[snapPoints.length - 1] ?? maxH);
 
       lastSnapRef.current = currentHeightRef.current;
@@ -309,6 +311,7 @@ function BottomSheetContent({
       }
       transitionTimeoutRef.current = setTimeout(() => {
         setIsTransitioning(false);
+        setSheetOffsetY(0); // Reset for next open
         onSpringEnd?.({ type: "CLOSE", source });
         setIsVisible(false);
         handleDismiss();

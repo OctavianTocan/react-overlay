@@ -393,7 +393,6 @@ function BottomSheetContent({
       // Effective height accounts for the Y offset
       const effectiveHeight = currentHeightRef.current - sheetOffsetY;
       const minSnap = snapPoints[0] ?? 100;
-      const protectedH = getProtectedHeight(headerContainerRef, footerContainerRef, HANDLE_HEIGHT);
 
       const draggedDownDistance = dragStartHeightRef.current - effectiveHeight;
       const shouldDismiss =

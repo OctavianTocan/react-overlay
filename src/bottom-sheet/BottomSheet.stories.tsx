@@ -573,8 +573,16 @@ export const KeyboardAware: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "On mobile devices, when the virtual keyboard opens (input focus), the sheet automatically snaps to a smaller snap point. Test this on a real mobile device or use Chrome DevTools mobile emulation with virtual keyboard enabled.",
+        story: `On mobile devices, when the virtual keyboard opens (input focus), the sheet automatically snaps to a smaller snap point.
+
+**Testing Instructions:**
+1. **Real Mobile Device**: Open this story on a mobile device and tap an input field to trigger the virtual keyboard
+2. **Chrome DevTools Emulation**:
+   - Open DevTools (F12) → Toggle Device Toolbar (Ctrl+Shift+M)
+   - Select a mobile device (e.g., iPhone, Pixel)
+   - Click ⋮ menu → More tools → Sensors → Check "Emulate a focused page"
+   - In the device toolbar, enable virtual keyboard: click ⋮ → Show device frame → Show media queries
+3. **Expected Behavior**: When input receives focus and keyboard appears, the sheet should snap from 600px to 200px (smallest snap point)`,
       },
     },
   },
@@ -619,6 +627,18 @@ export const KeyboardAwareCustomSnapPoint: Story = {
       </div>
     </BottomSheetDemo>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates custom keyboard snap point behavior using \`keyboardSnapPoint={1}\` to snap to the middle snap point (300px) instead of the smallest.
+
+**Testing Instructions:**
+1. **Real Mobile Device**: Open this story on a mobile device and tap the search input
+2. **Chrome DevTools**: Use mobile emulation with virtual keyboard enabled (see KeyboardAware story for detailed steps)
+3. **Expected Behavior**: When input receives focus, sheet should snap from 500px to 300px (middle snap point, index 1)`,
+      },
+    },
+  },
 };
 
 export const WithDismissButtonRight: Story = {

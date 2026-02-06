@@ -484,7 +484,10 @@ function BottomSheetContent({
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       handleDragStart(e.clientY);
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      // setPointerCapture may not be available in test environments (jsdom)
+      if (typeof (e.target as HTMLElement).setPointerCapture === "function") {
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      }
     },
     [handleDragStart]
   );

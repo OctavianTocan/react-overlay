@@ -279,7 +279,8 @@ function BottomSheetContent({
           setIsTransitioning(false);
           onSpringEnd?.({ type: "OPEN" });
           if (blocking && initialFocusRef !== false && initialFocusRef?.current) {
-            initialFocusRef.current.focus();
+            // Use preventScroll to avoid page jumping when focusing elements
+            initialFocusRef.current.focus({ preventScroll: true });
           }
         },
         Math.max(springDuration, ANIMATION_DURATION_MS)

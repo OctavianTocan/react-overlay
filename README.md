@@ -125,7 +125,8 @@ function App() {
 | `children`      | `ReactNode`            | required     | Content to render              |
 | `snapPoints`    | `number[] \| Function` | `[40%, 85%]` | Snap points for the sheet      |
 | `defaultSnap`   | `number \| Function`   | last point   | Initial snap point             |
-| `header`        | `ReactNode`            | -            | Sticky header content          |
+| `header`        | `ReactNode`            | -            | Header content above the scroll area |
+| `stickyHeader`  | `ReactNode`            | -            | Sticky header inside the scroll area |
 | `footer`        | `ReactNode`            | -            | Sticky footer content          |
 | `scrollLocking` | `boolean`              | `true`       | Lock body scroll when open     |
 | `testId`        | `string`               | -            | Test ID for testing            |

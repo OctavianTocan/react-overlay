@@ -15,10 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `contentClassName` and `contentStyle` for content area styling
   - `unstyled` prop to remove default backgrounds and padding for full customization
 - **BottomSheet Storybook stories:** Add examples for gradient backgrounds, dark themes, and custom styling
+- **BottomSheet:** Add `stickyHeader` for in-sheet sticky navigation while scrolling.
 
 ### Documentation
 
 - **README:** Add BottomSheet Styling Props section with gradient background example
+- **docs:** Document in-sheet sticky headers in API and examples.
 
 ## [1.2.0] - 2026-02-02
 

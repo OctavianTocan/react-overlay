@@ -85,6 +85,11 @@ function SheetWithHeaderFooter() {
           <span className="text-sm text-gray-500">{items.length} selected</span>
         </div>
       }
+      stickyHeader={
+        <div className="border-b pb-2">
+          <p className="text-sm font-semibold text-gray-700">Sticky Filters</p>
+        </div>
+      }
       footer={
         <div className="flex gap-2 py-2">
           <button

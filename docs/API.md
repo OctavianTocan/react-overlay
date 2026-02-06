@@ -37,7 +37,8 @@ import type { BottomSheetProps, BottomSheetRef } from '@octavian-tocan/react-ove
 | `children` | `ReactNode` | **required** | Content to render inside the sheet |
 | `snapPoints` | `number[] \| SnapPointsFunction` | `[40%, 85%]` | Snap points as pixel values or a function |
 | `defaultSnap` | `number \| DefaultSnapFunction` | last snap point | Initial snap point when opening |
-| `header` | `ReactNode` | - | Sticky header content |
+| `header` | `ReactNode` | - | Header content above the scroll area |
+| `stickyHeader` | `ReactNode` | - | Sticky header inside the scroll area |
 | `footer` | `ReactNode` | - | Sticky footer content |
 | `sibling` | `ReactNode` | - | Content rendered as sibling to backdrop |
 | `blocking` | `boolean` | `true` | Whether to trap focus and manage aria-hidden |
@@ -108,6 +109,11 @@ function App() {
   open={open}
   onDismiss={() => setOpen(false)}
   header={<h2 className="text-lg font-semibold">Sheet Title</h2>}
+  stickyHeader={
+    <div className="border-b pb-2">
+      <p className="text-sm font-semibold">Sticky Nav</p>
+    </div>
+  }
   footer={
     <div className="flex gap-2">
       <button onClick={() => setOpen(false)}>Cancel</button>

@@ -159,3 +159,9 @@ Run visual regression test to ensure no unintended UI changes:
 pnpm run storybook:build
 # Visual regression workflow will run automatically on PR creation
 ```
+
+### Release/Docs Checklist
+
+- Update relevant docs when behavior or APIs change.
+- Bump the package version in `package.json` for user-facing updates.
+- Add an entry to `CHANGELOG.md` describing the change.

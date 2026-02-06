@@ -110,6 +110,33 @@ export const WithHeader: Story = {
   ),
 };
 
+export const WithStickyHeader: Story = {
+  render: () => (
+    <BottomSheetDemo
+      header={
+        <div className="pb-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Sheet Header</h2>
+          <p className="text-sm text-gray-500">Static header above the scroll area.</p>
+        </div>
+      }
+      stickyHeader={
+        <div className="pb-3 border-b border-gray-200">
+          <p className="text-sm font-semibold text-gray-700">Sticky Nav</p>
+          <p className="text-xs text-gray-500">Stays visible while you scroll.</p>
+        </div>
+      }
+    >
+      <div className="space-y-4 pt-4">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <p key={i} className="text-gray-600">
+            Scrollable content paragraph {i + 1}. Keep scrolling to see the sticky header stay visible.
+          </p>
+        ))}
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
 export const WithFooter: Story = {
   render: () => (
     <BottomSheetDemo

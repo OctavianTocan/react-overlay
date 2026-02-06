@@ -54,6 +54,16 @@ function findSnapPointInDirection(currentHeight: number, velocity: number, snapP
   return sorted[sorted.length - 1]!;
 }
 
+function getProtectedHeight(
+  headerRef: React.RefObject<HTMLDivElement | null>,
+  footerRef: React.RefObject<HTMLDivElement | null>,
+  handleHeight: number
+): number {
+  const headerH = headerRef.current?.offsetHeight ?? 0;
+  const footerH = footerRef.current?.offsetHeight ?? 0;
+  return headerH + footerH + handleHeight;
+}
+
 // ============================================================================
 // BottomSheetContent (internal)
 // ============================================================================
@@ -71,6 +81,7 @@ function BottomSheetContent({
   defaultSnap,
   header,
   footer,
+  headerBorder = true,
   title,
   sibling,
   blocking = true,
@@ -81,6 +92,12 @@ function BottomSheetContent({
   initialFocusRef,
   className,
   style,
+  sheetClassName,
+  sheetStyle,
+  handleClassName,
+  contentClassName,
+  contentStyle,
+  unstyled,
   onSpringStart,
   onSpringEnd,
   onSpringCancel: _onSpringCancel,
@@ -100,6 +117,7 @@ function BottomSheetContent({
   const [backdropOpacity, setBackdropOpacity] = useState(0);
   const [_isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDuration, setTransitionDuration] = useState<number | null>(null);
+  const [sheetOffsetY, setSheetOffsetY] = useState(0);
 
   // ========== Refs ==========
   const currentHeightRef = useRef<number>(0);
@@ -114,9 +132,22 @@ function BottomSheetContent({
   const backdropElementRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
+  const footerContainerRef = useRef<HTMLDivElement>(null);
 
   // ========== Computed Values ==========
   const maxH = maxHeightProp ?? windowHeight * 0.9;
+
+  // Compute unstyled flags for conditional styling
+  const unstyledFlags = useMemo(() => {
+    if (unstyled === true) {
+      return { sheet: true, content: true, handle: true };
+    }
+    if (typeof unstyled === "object" && unstyled !== null) {
+      return { sheet: false, content: false, handle: false, ...unstyled };
+    }
+    return { sheet: false, content: false, handle: false };
+  }, [unstyled]);
 
   // Calculate snap points
   const snapPoints = useMemo(() => {
@@ -208,6 +239,8 @@ function BottomSheetContent({
 
   const animateToHeight = useCallback(
     (toHeight: number, source: "dragging" | "custom" = "custom") => {
+      setSheetOffsetY(0); // Reset offset when snapping
+
       const clampedHeight = clamp(toHeight, snapPoints[0] ?? 100, snapPoints[snapPoints.length - 1] ?? maxH);
 
       lastSnapRef.current = currentHeightRef.current;
@@ -263,7 +296,8 @@ function BottomSheetContent({
           setIsTransitioning(false);
           onSpringEnd?.({ type: "OPEN" });
           if (blocking && initialFocusRef !== false && initialFocusRef?.current) {
-            initialFocusRef.current.focus();
+            // Use preventScroll to avoid page jumping when focusing elements
+            initialFocusRef.current.focus({ preventScroll: true });
           }
         },
         Math.max(springDuration, ANIMATION_DURATION_MS)
@@ -295,6 +329,7 @@ function BottomSheetContent({
       }
       transitionTimeoutRef.current = setTimeout(() => {
         setIsTransitioning(false);
+        setSheetOffsetY(0); // Reset for next open
         onSpringEnd?.({ type: "CLOSE", source });
         setIsVisible(false);
         handleDismiss();
@@ -346,9 +381,20 @@ function BottomSheetContent({
       if (!isDraggingRef.current) return;
 
       const deltaY = dragStartYRef.current - y;
-      const newHeight = clamp(dragStartHeightRef.current + deltaY, 50, maxH + 50);
+      const rawHeight = dragStartHeightRef.current + deltaY;
+      const protectedH = getProtectedHeight(headerContainerRef, footerContainerRef, HANDLE_HEIGHT);
 
-      setHeightImmediate(newHeight);
+      if (rawHeight >= protectedH) {
+        // Content is still collapsing, no offset needed
+        const newHeight = clamp(rawHeight, protectedH, maxH + 50);
+        setHeightImmediate(newHeight);
+        setSheetOffsetY(0);
+      } else {
+        // Content fully collapsed, start moving sheet down
+        const offset = protectedH - rawHeight;
+        setHeightImmediate(protectedH);
+        setSheetOffsetY(Math.max(0, offset));
+      }
     },
     [maxH, setHeightImmediate]
   );
@@ -361,13 +407,19 @@ function BottomSheetContent({
       const deltaY = dragStartYRef.current - y;
       const deltaTime = Date.now() - dragStartTimeRef.current;
       const velocity = deltaTime > 0 ? deltaY / deltaTime : 0;
-      const currentHeight = currentHeightRef.current;
+
+      // Effective height accounts for the Y offset
+      const effectiveHeight = currentHeightRef.current - sheetOffsetY;
       const minSnap = snapPoints[0] ?? 100;
 
-      const draggedDownDistance = dragStartHeightRef.current - currentHeight;
+      const draggedDownDistance = dragStartHeightRef.current - effectiveHeight;
       const shouldDismiss =
-        (draggedDownDistance > DISMISS_THRESHOLD_PX && currentHeight < minSnap + 50) ||
-        (velocity < -VELOCITY_THRESHOLD && currentHeight < minSnap + 100);
+        (draggedDownDistance > DISMISS_THRESHOLD_PX && effectiveHeight < minSnap + 50) ||
+        (velocity < -VELOCITY_THRESHOLD && effectiveHeight < minSnap + 100) ||
+        sheetOffsetY > DISMISS_THRESHOLD_PX;
+
+      // Reset offset before animating
+      setSheetOffsetY(0);
 
       if (shouldDismiss) {
         animateClose("dragging");
@@ -376,14 +428,14 @@ function BottomSheetContent({
 
       let targetSnap: number;
       if (Math.abs(velocity) > SNAP_VELOCITY_THRESHOLD) {
-        targetSnap = findSnapPointInDirection(currentHeight, velocity, snapPoints);
+        targetSnap = findSnapPointInDirection(currentHeightRef.current, velocity, snapPoints);
       } else {
-        targetSnap = findClosestSnapPoint(currentHeight, snapPoints);
+        targetSnap = findClosestSnapPoint(currentHeightRef.current, snapPoints);
       }
 
       animateToHeight(targetSnap, "dragging");
     },
-    [snapPoints, animateClose, animateToHeight]
+    [snapPoints, animateClose, animateToHeight, sheetOffsetY]
   );
 
   // ========== Touch Event Handlers ==========
@@ -432,7 +484,10 @@ function BottomSheetContent({
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       handleDragStart(e.clientY);
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      // setPointerCapture may not be available in test environments (jsdom)
+      if (typeof (e.target as HTMLElement).setPointerCapture === "function") {
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      }
     },
     [handleDragStart]
   );
@@ -648,11 +703,17 @@ function BottomSheetContent({
         ref={sheetElementRef}
         style={{
           ...styles.sheet,
+          ...(unstyledFlags.sheet && { backgroundColor: "transparent" }),
           height: `${sheetHeight}px`,
           maxHeight: `${maxH}px`,
+          transform: `translateY(${sheetOffsetY}px)`,
           transition:
-            transitionDuration !== null ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)` : "none",
+            transitionDuration !== null
+              ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1), transform ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)`
+              : "none",
+          ...sheetStyle,
         }}
+        className={sheetClassName}
       >
         {dismissButton?.show && (
           <DismissButton
@@ -664,9 +725,13 @@ function BottomSheetContent({
         )}
 
         {/* Drag Handle Zone */}
-        <div style={styles.handleZone} data-bottom-sheet-drag-zone>
+        <div
+          style={unstyledFlags.handle ? { ...styles.handleZone, height: "auto" } : styles.handleZone}
+          className={handleClassName}
+          data-bottom-sheet-drag-zone
+        >
           <div
-            style={styles.handleArea}
+            style={unstyledFlags.handle ? { ...styles.handleArea, height: "auto" } : styles.handleArea}
             data-bottom-sheet-handle
             role="button"
             aria-label={title ? `Drag handle for ${title}` : "Drag handle"}
@@ -674,20 +739,43 @@ function BottomSheetContent({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
           >
-            <div style={styles.handle} />
+            {!unstyledFlags.handle && <div style={styles.handle} />}
           </div>
         </div>
 
         {/* Header (Sticky) */}
-        {headerContent && <div style={styles.headerContainer}>{headerContent}</div>}
+        {headerContent && (
+          <div
+            ref={headerContainerRef}
+            style={{
+              ...styles.headerContainer,
+              ...(headerBorder === false
+                ? { borderBottomWidth: 0 }
+                : typeof headerBorder === "string"
+                  ? { borderBottomColor: headerBorder }
+                  : {}),
+            }}
+          >
+            {headerContent}
+          </div>
+        )}
 
         {/* Scrollable Content */}
-        <div style={styles.scrollView} data-bottom-sheet-content data-ro-scroll>
-          <div style={styles.scrollContent}>{children}</div>
+        <div
+          style={{ ...styles.scrollView, ...contentStyle }}
+          className={contentClassName}
+          data-bottom-sheet-content
+          data-ro-scroll
+        >
+          <div style={unstyledFlags.content ? {} : styles.scrollContent}>{children}</div>
         </div>
 
         {/* Footer (Sticky) */}
-        {footer && <div style={styles.footerContainer}>{footer}</div>}
+        {footer && (
+          <div ref={footerContainerRef} style={styles.footerContainer}>
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

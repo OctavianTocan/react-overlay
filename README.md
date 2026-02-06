@@ -130,6 +130,54 @@ function App() {
 | `scrollLocking` | `boolean`              | `true`       | Lock body scroll when open     |
 | `testId`        | `string`               | -            | Test ID for testing            |
 
+#### BottomSheet Styling Props
+
+| Prop               | Type                | Default | Description                           |
+| ------------------ | ------------------- | ------- | ------------------------------------- |
+| `className`        | `string`            | -       | CSS class for root overlay            |
+| `style`            | `CSSProperties`     | -       | Inline styles for root overlay        |
+| `sheetClassName`   | `string`            | -       | CSS class for sheet container         |
+| `sheetStyle`       | `CSSProperties`     | -       | Inline styles for sheet container     |
+| `handleClassName`  | `string`            | -       | CSS class for handle zone             |
+| `contentClassName` | `string`            | -       | CSS class for scrollable content area |
+| `contentStyle`     | `CSSProperties`     | -       | Inline styles for scrollable content  |
+| `unstyled`         | `boolean \| object` | -       | Remove default styling (see below)    |
+
+#### Unstyled Mode
+
+The `unstyled` prop removes default backgrounds and padding for full customization:
+
+```tsx
+// Remove all default styling
+<BottomSheet unstyled>...</BottomSheet>
+
+// Selectively remove styling
+<BottomSheet unstyled={{ sheet: true, content: true, handle: false }}>...</BottomSheet>
+```
+
+| Option    | Effect                              |
+| --------- | ----------------------------------- |
+| `sheet`   | Removes white background from sheet |
+| `content` | Removes padding from content area   |
+| `handle`  | Hides the drag handle pill          |
+
+#### Gradient Background Example
+
+```tsx
+<BottomSheet
+  open={open}
+  onDismiss={() => setOpen(false)}
+  unstyled={{ sheet: true, content: true }}
+  sheetClassName="bg-gradient-to-b from-sky-400 to-sky-600"
+  contentClassName="p-6"
+>
+  <div className="text-white">
+    <h2>Sign in to continue</h2>
+    <p>Create an account to get started</p>
+  </div>
+</BottomSheet>
+```
+
 ### Modal
 
 A centered modal dialog with size presets and Motion animations.

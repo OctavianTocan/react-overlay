@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **BottomSheet styling props:** Add comprehensive styling customization for BottomSheet component
+  - `sheetClassName` and `sheetStyle` for sheet container styling
+  - `handleClassName` for handle zone customization
+  - `contentClassName` and `contentStyle` for content area styling
+  - `unstyled` prop to remove default backgrounds and padding for full customization
+- **BottomSheet Storybook stories:** Add examples for gradient backgrounds, dark themes, and custom styling
+
+### Documentation
+
+- **README:** Add BottomSheet Styling Props section with gradient background example
+
 ## [1.2.0] - 2026-02-02
 
 ### Added

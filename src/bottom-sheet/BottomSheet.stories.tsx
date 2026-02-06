@@ -804,3 +804,199 @@ export const HeaderBorderCustomColor: Story = {
     </BottomSheetDemo>
   ),
 };
+
+// ============================================================================
+// Styling Props Stories
+// ============================================================================
+
+export const GradientBackground: Story = {
+  render: () => (
+    <BottomSheetDemo
+      unstyled={{ sheet: true, content: true }}
+      sheetClassName="bg-gradient-to-b from-sky-400 to-sky-600"
+      contentClassName="p-6"
+      buttonText="Open Gradient Sheet"
+    >
+      <div className="text-white text-center">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-2">Sign in to continue</h2>
+          <p className="text-sky-100">Create an account to chat with TwinMind</p>
+        </div>
+        <div className="flex justify-center gap-3 mb-8">
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">🤖</div>
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">🅰️</div>
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">✨</div>
+        </div>
+        <button className="w-full py-3 bg-white text-gray-800 rounded-full font-medium mb-3 flex items-center justify-center gap-2">
+          <span>🔵</span> Continue with Google
+        </button>
+        <button className="w-full py-3 bg-gray-800 text-white rounded-full font-medium flex items-center justify-center gap-2">
+          <span>🍎</span> Continue with Apple
+        </button>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates using \`unstyled\` and \`sheetClassName\` to create a gradient background sheet.
+
+**Key props used:**
+- \`unstyled={{ sheet: true, content: true }}\` - Removes default white background and padding
+- \`sheetClassName="bg-gradient-to-b from-sky-400 to-sky-600"\` - Applies Tailwind gradient
+- \`contentClassName="p-6"\` - Adds custom padding`,
+      },
+    },
+  },
+};
+
+export const DarkThemedSheet: Story = {
+  render: () => (
+    <BottomSheetDemo
+      sheetStyle={{ backgroundColor: "#1a1a2e" }}
+      contentClassName="text-white"
+      buttonText="Open Dark Sheet"
+    >
+      <h2 className="text-xl font-bold mb-4">Dark Theme</h2>
+      <p className="text-gray-300 mb-4">
+        This sheet uses <code className="bg-gray-700 px-1 rounded">sheetStyle</code> to set a dark background color
+        without removing other default styles.
+      </p>
+      <div className="space-y-3">
+        <div className="p-4 bg-white/10 rounded-lg">
+          <h3 className="font-medium">Feature 1</h3>
+          <p className="text-sm text-gray-400">Description of the feature</p>
+        </div>
+        <div className="p-4 bg-white/10 rounded-lg">
+          <h3 className="font-medium">Feature 2</h3>
+          <p className="text-sm text-gray-400">Description of the feature</p>
+        </div>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Shows how to use \`sheetStyle\` to override just the background color while keeping default padding and other styles.`,
+      },
+    },
+  },
+};
+
+export const FullyUnstyledSheet: Story = {
+  render: () => (
+    <BottomSheetDemo unstyled buttonText="Open Unstyled Sheet">
+      <div className="bg-gradient-to-br from-purple-500 to-pink-500 min-h-[300px] p-8 text-white">
+        <h2 className="text-2xl font-bold mb-4">Fully Unstyled</h2>
+        <p className="mb-4">
+          With <code className="bg-white/20 px-1 rounded">unstyled={"{true}"}</code>, all default backgrounds, padding,
+          and handle styling are removed.
+        </p>
+        <p className="text-sm text-white/80">
+          The handle zone still exists for dragging but has no visual indicator. You can add your own custom handle if
+          needed.
+        </p>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates \`unstyled={true}\` which removes all default styling:
+- Sheet background becomes transparent
+- Content padding is removed
+- Handle pill is hidden (but drag zone still works)
+
+This gives you complete control over the sheet's appearance.`,
+      },
+    },
+  },
+};
+
+export const CustomHandleZone: Story = {
+  render: () => (
+    <BottomSheetDemo unstyled={{ handle: true }} handleClassName="bg-gray-100 py-3" buttonText="Open Custom Handle">
+      <div className="text-center text-gray-500 text-sm -mt-2 mb-4">⬆️ Custom handle zone above ⬆️</div>
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">Custom Handle Zone</h2>
+      <p className="text-gray-600">
+        The default handle pill is hidden with{" "}
+        <code>
+          unstyled={"{{"} handle: true {"}}"}
+        </code>
+        , and a custom background is applied with <code>handleClassName</code>.
+      </p>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Shows how to customize just the handle zone while keeping other default styles.`,
+      },
+    },
+  },
+};
+
+export const ContentStyleOverride: Story = {
+  render: () => (
+    <BottomSheetDemo contentStyle={{ padding: "32px", backgroundColor: "#f0f9ff" }} buttonText="Open Custom Content">
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">Custom Content Styling</h2>
+      <p className="text-gray-600 mb-4">
+        This sheet uses <code>contentStyle</code> to override the content area's padding and background.
+      </p>
+      <div className="p-4 bg-white rounded-lg shadow-sm">
+        <p className="text-gray-700">Content inside a card</p>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates using \`contentStyle\` to customize the scrollable content area.`,
+      },
+    },
+  },
+};
+
+export const CombinedStylingProps: Story = {
+  render: () => (
+    <BottomSheetDemo
+      unstyled={{ sheet: true, content: true }}
+      sheetClassName="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500"
+      sheetStyle={{ borderTopLeftRadius: "32px", borderTopRightRadius: "32px" }}
+      handleClassName="pt-4"
+      contentClassName="px-8 pb-8"
+      buttonText="Open Combined Styling"
+    >
+      <div className="text-white">
+        <h2 className="text-2xl font-bold mb-2">Combined Styling</h2>
+        <p className="text-white/80 mb-6">This example combines multiple styling props for maximum customization.</p>
+        <div className="space-y-4">
+          <div className="p-4 bg-white/10 backdrop-blur rounded-xl">
+            <h3 className="font-semibold mb-1">sheetClassName</h3>
+            <p className="text-sm text-white/70">Gradient background via Tailwind</p>
+          </div>
+          <div className="p-4 bg-white/10 backdrop-blur rounded-xl">
+            <h3 className="font-semibold mb-1">sheetStyle</h3>
+            <p className="text-sm text-white/70">Custom border radius (32px)</p>
+          </div>
+          <div className="p-4 bg-white/10 backdrop-blur rounded-xl">
+            <h3 className="font-semibold mb-1">contentClassName</h3>
+            <p className="text-sm text-white/70">Custom padding (px-8 pb-8)</p>
+          </div>
+        </div>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Shows how to combine multiple styling props together:
+- \`unstyled\` to remove defaults
+- \`sheetClassName\` for Tailwind classes
+- \`sheetStyle\` for inline styles
+- \`handleClassName\` for handle customization
+- \`contentClassName\` for content area`,
+      },
+    },
+  },
+};

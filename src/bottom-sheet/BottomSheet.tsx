@@ -92,6 +92,12 @@ function BottomSheetContent({
   initialFocusRef,
   className,
   style,
+  sheetClassName,
+  sheetStyle,
+  handleClassName,
+  contentClassName,
+  contentStyle,
+  unstyled,
   onSpringStart,
   onSpringEnd,
   onSpringCancel: _onSpringCancel,
@@ -131,6 +137,17 @@ function BottomSheetContent({
 
   // ========== Computed Values ==========
   const maxH = maxHeightProp ?? windowHeight * 0.9;
+
+  // Compute unstyled flags for conditional styling
+  const unstyledFlags = useMemo(() => {
+    if (unstyled === true) {
+      return { sheet: true, content: true, handle: true };
+    }
+    if (typeof unstyled === "object" && unstyled !== null) {
+      return { sheet: false, content: false, handle: false, ...unstyled };
+    }
+    return { sheet: false, content: false, handle: false };
+  }, [unstyled]);
 
   // Calculate snap points
   const snapPoints = useMemo(() => {
@@ -683,6 +700,7 @@ function BottomSheetContent({
         ref={sheetElementRef}
         style={{
           ...styles.sheet,
+          ...(unstyledFlags.sheet && { backgroundColor: "transparent" }),
           height: `${sheetHeight}px`,
           maxHeight: `${maxH}px`,
           transform: `translateY(${sheetOffsetY}px)`,
@@ -690,7 +708,9 @@ function BottomSheetContent({
             transitionDuration !== null
               ? `height ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1), transform ${transitionDuration}ms cubic-bezier(0.4, 0.0, 0.2, 1)`
               : "none",
+          ...sheetStyle,
         }}
+        className={sheetClassName}
       >
         {dismissButton?.show && (
           <DismissButton
@@ -702,9 +722,13 @@ function BottomSheetContent({
         )}
 
         {/* Drag Handle Zone */}
-        <div style={styles.handleZone} data-bottom-sheet-drag-zone>
+        <div
+          style={unstyledFlags.handle ? { ...styles.handleZone, height: "auto" } : styles.handleZone}
+          className={handleClassName}
+          data-bottom-sheet-drag-zone
+        >
           <div
-            style={styles.handleArea}
+            style={unstyledFlags.handle ? { ...styles.handleArea, height: "auto" } : styles.handleArea}
             data-bottom-sheet-handle
             role="button"
             aria-label={title ? `Drag handle for ${title}` : "Drag handle"}
@@ -712,7 +736,7 @@ function BottomSheetContent({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
           >
-            <div style={styles.handle} />
+            {!unstyledFlags.handle && <div style={styles.handle} />}
           </div>
         </div>
 
@@ -734,8 +758,13 @@ function BottomSheetContent({
         )}
 
         {/* Scrollable Content */}
-        <div style={styles.scrollView} data-bottom-sheet-content data-ro-scroll>
-          <div style={styles.scrollContent}>{children}</div>
+        <div
+          style={{ ...styles.scrollView, ...contentStyle }}
+          className={contentClassName}
+          data-bottom-sheet-content
+          data-ro-scroll
+        >
+          <div style={unstyledFlags.content ? {} : styles.scrollContent}>{children}</div>
         </div>
 
         {/* Footer (Sticky) */}

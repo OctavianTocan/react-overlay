@@ -341,3 +341,185 @@ describe("BottomSheet Sticky Header/Footer Collapse", () => {
     fireEvent.pointerUp(handle, { clientY: 400, pointerId: 1 });
   });
 });
+
+describe("BottomSheet Styling Props", () => {
+  /** Helper to get the sheet container element */
+  function getSheetContainer(testId: string): HTMLElement {
+    const overlay = document.querySelector(`[data-testid="${testId}"]`) as HTMLElement;
+    const sheetCandidates = overlay.querySelectorAll(":scope > div");
+    return Array.from(sheetCandidates).find((el) => el.querySelector("[data-bottom-sheet-handle]")) as HTMLElement;
+  }
+
+  describe("className props", () => {
+    it("applies sheetClassName to the sheet container", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" sheetClassName="custom-sheet-class">
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const sheet = getSheetContainer("bottom-sheet");
+      expect(sheet).toHaveClass("custom-sheet-class");
+    });
+
+    it("applies handleClassName to the handle zone", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" handleClassName="custom-handle-class">
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const handleZone = document.querySelector("[data-bottom-sheet-drag-zone]") as HTMLElement;
+      expect(handleZone).toHaveClass("custom-handle-class");
+    });
+
+    it("applies contentClassName to the content area", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" contentClassName="custom-content-class">
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const contentArea = document.querySelector("[data-bottom-sheet-content]") as HTMLElement;
+      expect(contentArea).toHaveClass("custom-content-class");
+    });
+  });
+
+  describe("style props", () => {
+    it("applies sheetStyle to the sheet container", () => {
+      render(
+        <BottomSheet
+          open={true}
+          onDismiss={() => {}}
+          testId="bottom-sheet"
+          sheetStyle={{ backgroundColor: "rgb(255, 0, 0)" }}
+        >
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const sheet = getSheetContainer("bottom-sheet");
+      expect(sheet).toHaveStyle({ backgroundColor: "rgb(255, 0, 0)" });
+    });
+
+    it("applies contentStyle to the content area", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" contentStyle={{ padding: "32px" }}>
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const contentArea = document.querySelector("[data-bottom-sheet-content]") as HTMLElement;
+      expect(contentArea).toHaveStyle({ padding: "32px" });
+    });
+  });
+
+  describe("unstyled prop", () => {
+    it("removes sheet background when unstyled is true", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" unstyled>
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const sheet = getSheetContainer("bottom-sheet");
+      expect(sheet.style.backgroundColor).toBe("transparent");
+    });
+
+    it("removes content padding when unstyled is true", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" unstyled>
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const contentArea = document.querySelector("[data-bottom-sheet-content]") as HTMLElement;
+      const scrollContent = contentArea.firstElementChild as HTMLElement;
+      // When unstyled, the inner div should have no padding styles
+      expect(scrollContent.style.paddingLeft).toBe("");
+      expect(scrollContent.style.paddingRight).toBe("");
+    });
+
+    it("hides handle pill when unstyled is true", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" unstyled>
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const handleArea = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+      // The handle pill should not be rendered
+      expect(handleArea.children.length).toBe(0);
+    });
+
+    it("removes only sheet background when unstyled={{ sheet: true }}", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" unstyled={{ sheet: true }}>
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const sheet = getSheetContainer("bottom-sheet");
+      expect(sheet.style.backgroundColor).toBe("transparent");
+
+      // Handle should still be visible
+      const handleArea = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+      expect(handleArea.children.length).toBe(1);
+    });
+
+    it("removes only content padding when unstyled={{ content: true }}", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" unstyled={{ content: true }}>
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const sheet = getSheetContainer("bottom-sheet");
+      // Sheet should still have default background (not transparent)
+      expect(sheet.style.backgroundColor).not.toBe("transparent");
+
+      const contentArea = document.querySelector("[data-bottom-sheet-content]") as HTMLElement;
+      const scrollContent = contentArea.firstElementChild as HTMLElement;
+      // Content padding should be removed
+      expect(scrollContent.style.paddingLeft).toBe("");
+    });
+
+    it("removes only handle when unstyled={{ handle: true }}", () => {
+      render(
+        <BottomSheet open={true} onDismiss={() => {}} testId="bottom-sheet" unstyled={{ handle: true }}>
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const sheet = getSheetContainer("bottom-sheet");
+      // Sheet should still have default background (not transparent)
+      expect(sheet.style.backgroundColor).not.toBe("transparent");
+
+      // Handle pill should not be rendered
+      const handleArea = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+      expect(handleArea.children.length).toBe(0);
+    });
+
+    it("combines unstyled with className props", () => {
+      render(
+        <BottomSheet
+          open={true}
+          onDismiss={() => {}}
+          testId="bottom-sheet"
+          unstyled={{ sheet: true, content: true }}
+          sheetClassName="gradient-background"
+          contentClassName="custom-padding"
+        >
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const sheet = getSheetContainer("bottom-sheet");
+      expect(sheet).toHaveClass("gradient-background");
+      expect(sheet.style.backgroundColor).toBe("transparent");
+
+      const contentArea = document.querySelector("[data-bottom-sheet-content]") as HTMLElement;
+      expect(contentArea).toHaveClass("custom-padding");
+    });
+  });
+});

@@ -233,6 +233,46 @@ export interface BottomSheetProps {
   className?: string;
   /** Inline styles applied to the root element */
   style?: React.CSSProperties;
+  /** CSS class name applied to the sheet container */
+  sheetClassName?: string;
+  /** Inline styles applied to the sheet container */
+  sheetStyle?: React.CSSProperties;
+  /** CSS class name applied to the handle zone */
+  handleClassName?: string;
+  /** CSS class name applied to the scrollable content area */
+  contentClassName?: string;
+  /** Inline styles applied to the scrollable content area */
+  contentStyle?: React.CSSProperties;
+
+  /**
+   * Remove default styling for full customization.
+   * - `true`: Remove all default backgrounds and padding
+   * - Object: Selectively remove styling per section
+   * @example Full unstyled
+   * ```tsx
+   * <BottomSheet unstyled>
+   *   <div className="bg-gradient-to-b from-blue-400 to-blue-600 p-6">
+   *     Content with custom gradient
+   *   </div>
+   * </BottomSheet>
+   * ```
+   * @example Selective unstyled
+   * ```tsx
+   * <BottomSheet unstyled={{ sheet: true, content: true }}>
+   *   ...
+   * </BottomSheet>
+   * ```
+   */
+  unstyled?:
+    | boolean
+    | {
+        /** Remove sheet background color */
+        sheet?: boolean;
+        /** Remove content padding */
+        content?: boolean;
+        /** Remove handle default styling */
+        handle?: boolean;
+      };
 
   // Events
   /** Called when spring animation starts */

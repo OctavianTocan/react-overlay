@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **BottomSheet:** Add `handleStyle` prop for customizing the handle pill's inline styles (e.g., background color)
+- **DismissButton:** Add `unstyled` variant for fully customizable dismiss buttons without default background/border/shadow
 - **BottomSheet styling props:** Add comprehensive styling customization for BottomSheet component
   - `sheetClassName` and `sheetStyle` for sheet container styling
   - `handleClassName` for handle zone customization
@@ -19,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
+- **README:** Add `handleStyle` prop documentation and dark theme example
+- **API:** Document `handleStyle` prop and `unstyled` DismissButton variant
 - **README:** Add BottomSheet Styling Props section with gradient background example
 - **docs:** Document in-sheet sticky headers in API and examples.
 

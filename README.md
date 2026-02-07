@@ -118,18 +118,18 @@ function App() {
 
 #### BottomSheet Props
 
-| Prop            | Type                   | Default      | Description                    |
-| --------------- | ---------------------- | ------------ | ------------------------------ |
-| `open`          | `boolean`              | required     | Whether the sheet is open      |
-| `onDismiss`     | `() => void`           | required     | Called when sheet is dismissed |
-| `children`      | `ReactNode`            | required     | Content to render              |
-| `snapPoints`    | `number[] \| Function` | `[40%, 85%]` | Snap points for the sheet      |
-| `defaultSnap`   | `number \| Function`   | last point   | Initial snap point             |
+| Prop            | Type                   | Default      | Description                          |
+| --------------- | ---------------------- | ------------ | ------------------------------------ |
+| `open`          | `boolean`              | required     | Whether the sheet is open            |
+| `onDismiss`     | `() => void`           | required     | Called when sheet is dismissed       |
+| `children`      | `ReactNode`            | required     | Content to render                    |
+| `snapPoints`    | `number[] \| Function` | `[40%, 85%]` | Snap points for the sheet            |
+| `defaultSnap`   | `number \| Function`   | last point   | Initial snap point                   |
 | `header`        | `ReactNode`            | -            | Header content above the scroll area |
 | `stickyHeader`  | `ReactNode`            | -            | Sticky header inside the scroll area |
-| `footer`        | `ReactNode`            | -            | Sticky footer content          |
-| `scrollLocking` | `boolean`              | `true`       | Lock body scroll when open     |
-| `testId`        | `string`               | -            | Test ID for testing            |
+| `footer`        | `ReactNode`            | -            | Sticky footer content                |
+| `scrollLocking` | `boolean`              | `true`       | Lock body scroll when open           |
+| `testId`        | `string`               | -            | Test ID for testing                  |
 
 #### BottomSheet Styling Props
 
@@ -140,6 +140,7 @@ function App() {
 | `sheetClassName`   | `string`            | -       | CSS class for sheet container         |
 | `sheetStyle`       | `CSSProperties`     | -       | Inline styles for sheet container     |
 | `handleClassName`  | `string`            | -       | CSS class for handle zone             |
+| `handleStyle`      | `CSSProperties`     | -       | Inline styles for handle pill         |
 | `contentClassName` | `string`            | -       | CSS class for scrollable content area |
 | `contentStyle`     | `CSSProperties`     | -       | Inline styles for scrollable content  |
 | `unstyled`         | `boolean \| object` | -       | Remove default styling (see below)    |
@@ -175,6 +176,30 @@ The `unstyled` prop removes default backgrounds and padding for full customizati
   <div className="text-white">
     <h2>Sign in to continue</h2>
     <p>Create an account to get started</p>
+  </div>
+</BottomSheet>
+```
+
+#### Dark Theme with Custom Handle and Dismiss Button
+
+For dark-themed sheets, use `handleStyle` to customize the handle pill color and the `unstyled` dismiss button variant:
+
+```tsx
+<BottomSheet
+  open={open}
+  onDismiss={() => setOpen(false)}
+  unstyled={{ sheet: true, content: true }}
+  sheetClassName="bg-gradient-to-br from-gray-900 to-gray-800"
+  handleStyle={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+  dismissButton={{
+    show: true,
+    position: "right",
+    props: { variant: "unstyled", className: "text-white hover:text-white/80" },
+  }}
+>
+  <div className="text-white p-6">
+    <h2>Dark Theme Sheet</h2>
+    <p>Custom handle and dismiss button styling</p>
   </div>
 </BottomSheet>
 ```
@@ -263,10 +288,16 @@ import { DismissButton } from "@octavian-tocan/react-overlay";
 
 <DismissButton
   onClick={handleClose}
-  variant="default" // or "subtle"
+  variant="default" // "default", "subtle", or "unstyled"
   position="absolute top-3 right-3"
 />;
 ```
+
+| Variant    | Description                                              |
+| ---------- | -------------------------------------------------------- |
+| `default`  | White background, border, shadow - for light backgrounds |
+| `subtle`   | White background, no border - for banners                |
+| `unstyled` | No background/border/shadow - for dark backgrounds       |
 
 ## Hooks
 

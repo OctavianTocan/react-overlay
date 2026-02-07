@@ -95,6 +95,7 @@ function BottomSheetContent({
   sheetClassName,
   sheetStyle,
   handleClassName,
+  handleStyle,
   contentClassName,
   contentStyle,
   unstyled,
@@ -740,7 +741,7 @@ function BottomSheetContent({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
           >
-            {!unstyledFlags.handle && <div style={styles.handle} />}
+            {!unstyledFlags.handle && <div style={{ ...styles.handle, ...handleStyle }} />}
           </div>
         </div>
 

@@ -10,7 +10,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "../utils";
 
-export type DismissButtonVariant = "default" | "subtle";
+export type DismissButtonVariant = "default" | "subtle" | "unstyled";
 
 export interface DismissButtonProps {
   /** Called when the button is clicked */
@@ -41,6 +41,7 @@ const VARIANT_CLASSES: Record<DismissButtonVariant, string> = {
   default:
     "size-7 border border-blue-600/40 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 hover:border-blue-600/60",
   subtle: "size-6 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-800",
+  unstyled: "size-7 text-current",
 };
 
 const BASE_BUTTON_CLASSES =

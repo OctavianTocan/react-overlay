@@ -1027,3 +1027,148 @@ export const CombinedStylingProps: Story = {
     },
   },
 };
+
+export const CustomHandleStyle: Story = {
+  render: () => (
+    <BottomSheetDemo
+      unstyled={{ sheet: true, content: true }}
+      sheetClassName="bg-gradient-to-br from-slate-800 to-slate-900"
+      sheetStyle={{ borderTopLeftRadius: "24px", borderTopRightRadius: "24px" }}
+      handleStyle={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+      contentClassName="px-6 pb-6"
+      buttonText="Open Custom Handle Style"
+    >
+      <div className="text-white">
+        <h2 className="text-xl font-bold mb-2">Custom Handle Style</h2>
+        <p className="text-white/70 mb-4">
+          The handle pill uses <code className="bg-white/10 px-1 rounded">handleStyle</code> to override the default
+          gray color with a translucent white that works on dark backgrounds.
+        </p>
+        <div className="p-4 bg-white/10 backdrop-blur rounded-xl">
+          <code className="text-sm text-white/90">
+            {`handleStyle={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}`}
+          </code>
+        </div>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates the \`handleStyle\` prop which allows overriding the handle pill's inline styles.
+This is useful when you need to change the handle color to match a custom sheet background.
+
+The default handle uses \`backgroundColor: "#D1D5DB"\` (gray-300). Since this is an inline style,
+Tailwind classes cannot override it. The \`handleStyle\` prop solves this by merging your styles
+with the defaults.`,
+      },
+    },
+  },
+};
+
+export const UnstyledDismissButton: Story = {
+  render: () => (
+    <BottomSheetDemo
+      unstyled={{ sheet: true, content: true }}
+      sheetClassName="bg-gradient-to-br from-violet-600 to-purple-700"
+      sheetStyle={{ borderTopLeftRadius: "24px", borderTopRightRadius: "24px" }}
+      handleStyle={{ backgroundColor: "rgba(255, 255, 255, 0.4)" }}
+      contentClassName="px-6 pb-6"
+      dismissButton={{
+        show: true,
+        position: "right",
+        props: {
+          variant: "unstyled",
+          className: "text-white/80 hover:text-white",
+        },
+      }}
+      buttonText="Open Unstyled Dismiss"
+    >
+      <div className="text-white">
+        <h2 className="text-xl font-bold mb-2">Unstyled Dismiss Button</h2>
+        <p className="text-white/70 mb-4">
+          The dismiss button uses <code className="bg-white/10 px-1 rounded">variant: "unstyled"</code> to remove the
+          default white background, border, and shadow. This allows full control via className.
+        </p>
+        <div className="p-4 bg-white/10 backdrop-blur rounded-xl space-y-2">
+          <p className="text-sm font-medium">Configuration:</p>
+          <code className="text-xs text-white/90 block">
+            {`dismissButton={{
+  show: true,
+  position: "right",
+  props: {
+    variant: "unstyled",
+    className: "text-white/80 hover:text-white"
+  }
+}}`}
+          </code>
+        </div>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `Demonstrates the \`unstyled\` variant for the dismiss button.
+
+The default and subtle variants have hardcoded background, border, and shadow styles that
+cannot be removed via className. The \`unstyled\` variant provides minimal base styles
+(\`size-7 text-current\`) so you can fully customize the button's appearance.
+
+This is useful for dark-themed sheets where you want a bare X icon without the white circle.`,
+      },
+    },
+  },
+};
+
+export const DarkThemedWithCustomStyling: Story = {
+  render: () => (
+    <BottomSheetDemo
+      unstyled={{ sheet: true, content: true }}
+      sheetClassName="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+      sheetStyle={{ borderTopLeftRadius: "20px", borderTopRightRadius: "20px" }}
+      handleStyle={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
+      contentClassName="px-6 pb-6"
+      dismissButton={{
+        show: true,
+        position: "right",
+        props: {
+          variant: "unstyled",
+          className: "text-white/60 hover:text-white transition-colors",
+        },
+      }}
+      buttonText="Open Dark Theme"
+    >
+      <div className="text-white">
+        <h2 className="text-xl font-bold mb-2">Dark Themed Sheet</h2>
+        <p className="text-gray-400 mb-4">
+          A complete example showing how to create a dark-themed bottom sheet with proper handle and dismiss button
+          styling.
+        </p>
+        <div className="space-y-3">
+          <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+            <h3 className="font-medium text-white/90 mb-1">handleStyle</h3>
+            <p className="text-sm text-gray-400">Translucent white pill visible on dark background</p>
+          </div>
+          <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+            <h3 className="font-medium text-white/90 mb-1">dismissButton variant: "unstyled"</h3>
+            <p className="text-sm text-gray-400">Bare X icon without white circle background</p>
+          </div>
+        </div>
+      </div>
+    </BottomSheetDemo>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `A complete example of a dark-themed bottom sheet combining:
+- \`unstyled={{ sheet: true, content: true }}\` to remove default white background
+- \`sheetClassName\` for dark gradient background
+- \`handleStyle\` for translucent white handle pill
+- \`dismissButton\` with \`variant: "unstyled"\` for bare X icon
+
+This pattern is useful for sign-in modals, media players, or any dark UI.`,
+      },
+    },
+  },
+};

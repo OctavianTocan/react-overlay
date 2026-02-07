@@ -209,6 +209,29 @@ describe("BottomSheet Dismiss Button", () => {
 
     expect(screen.getByTestId("custom-dismiss-button")).toBeInTheDocument();
   });
+
+  it("renders unstyled variant dismiss button without default background/border", () => {
+    render(
+      <BottomSheet
+        open={true}
+        onDismiss={() => {}}
+        dismissButton={{
+          show: true,
+          position: "right",
+          props: { variant: "unstyled", className: "text-white", testId: "unstyled-dismiss" },
+        }}
+      >
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    const button = screen.getByTestId("unstyled-dismiss");
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass("text-white"); // custom class applied
+    expect(button).not.toHaveClass("bg-white"); // should NOT have default variant bg
+    expect(button).not.toHaveClass("border"); // should NOT have default variant border
+    expect(button).not.toHaveClass("shadow-sm"); // should NOT have default variant shadow
+  });
 });
 
 describe("BottomSheet Header Border", () => {
@@ -520,6 +543,58 @@ describe("BottomSheet Styling Props", () => {
 
       const contentArea = document.querySelector("[data-bottom-sheet-content]") as HTMLElement;
       expect(contentArea).toHaveClass("custom-padding");
+    });
+
+    it("applies handleStyle to the handle pill element", () => {
+      render(
+        <BottomSheet
+          open={true}
+          onDismiss={() => {}}
+          testId="bottom-sheet"
+          handleStyle={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        >
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const handleArea = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+      const handlePill = handleArea.firstElementChild as HTMLElement;
+      expect(handlePill).toHaveStyle({ backgroundColor: "rgba(255, 255, 255, 0.5)" });
+    });
+
+    it("handleStyle overrides default handle background color", () => {
+      render(
+        <BottomSheet
+          open={true}
+          onDismiss={() => {}}
+          testId="bottom-sheet"
+          handleStyle={{ backgroundColor: "rgb(255, 0, 0)" }}
+        >
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const handleArea = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+      const handlePill = handleArea.firstElementChild as HTMLElement;
+      expect(handlePill).toHaveStyle({ backgroundColor: "rgb(255, 0, 0)" });
+    });
+
+    it("handleStyle does not render when unstyled.handle is true", () => {
+      render(
+        <BottomSheet
+          open={true}
+          onDismiss={() => {}}
+          testId="bottom-sheet"
+          unstyled={{ handle: true }}
+          handleStyle={{ backgroundColor: "red" }}
+        >
+          <p>Content</p>
+        </BottomSheet>
+      );
+
+      const handleArea = document.querySelector("[data-bottom-sheet-handle]") as HTMLElement;
+      // Handle pill should not be rendered when unstyled.handle is true
+      expect(handleArea.children.length).toBe(0);
     });
   });
 });

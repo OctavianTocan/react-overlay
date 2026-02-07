@@ -248,6 +248,8 @@ export interface BottomSheetProps {
   sheetStyle?: React.CSSProperties;
   /** CSS class name applied to the handle zone */
   handleClassName?: string;
+  /** Inline styles applied to the handle pill element */
+  handleStyle?: React.CSSProperties;
   /** CSS class name applied to the scrollable content area */
   contentClassName?: string;
   /** Inline styles applied to the scrollable content area */

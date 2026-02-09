@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-02-09
+
 ### Added
 
+- **BottomSheet:** Add `footerBorder` prop to control the footer's top border visibility and color
+  - `true` (default): shows the default 1px solid border
+  - `false`: hides the border
+  - `string`: sets a custom border color
 - **BottomSheet:** Add `handleStyle` prop for customizing the handle pill's inline styles (e.g., background color)
 - **DismissButton:** Add `unstyled` variant for fully customizable dismiss buttons without default background/border/shadow
 - **BottomSheet styling props:** Add comprehensive styling customization for BottomSheet component

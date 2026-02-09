@@ -82,6 +82,7 @@ function BottomSheetContent({
   header,
   footer,
   headerBorder = true,
+  footerBorder = true,
   title,
   sibling,
   blocking = true,
@@ -775,7 +776,17 @@ function BottomSheetContent({
 
         {/* Footer (Sticky) */}
         {footer && (
-          <div ref={footerContainerRef} style={styles.footerContainer}>
+          <div
+            ref={footerContainerRef}
+            style={{
+              ...styles.footerContainer,
+              ...(footerBorder === false
+                ? { borderTopWidth: 0 }
+                : typeof footerBorder === "string"
+                  ? { borderTopColor: footerBorder }
+                  : {}),
+            }}
+          >
             {footer}
           </div>
         )}

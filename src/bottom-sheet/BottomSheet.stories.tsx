@@ -45,6 +45,10 @@ const meta: Meta<typeof BottomSheet> = {
       control: "text",
       description: "Header border: true (default), false (no border), or a color string",
     },
+    footerBorder: {
+      control: "text",
+      description: "Footer border: true (default), false (no border), or a color string",
+    },
   },
   parameters: {
     layout: "fullscreen",
@@ -827,6 +831,52 @@ export const HeaderBorderCustomColor: Story = {
           This sheet uses <code>headerBorder="#3B82F6"</code> to set a custom blue border color.
         </p>
         <p className="text-sm text-gray-500">Pass any valid CSS color value to customize the header border.</p>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const FooterBorderHidden: Story = {
+  render: () => (
+    <BottomSheetDemo
+      footerBorder={false}
+      footer={
+        <div className="flex gap-3 pt-4">
+          <button className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Cancel</button>
+          <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900">No Footer Border</h2>
+        <p className="text-gray-600">
+          This sheet uses <code>footerBorder={"{false}"}</code> to hide the default footer border.
+        </p>
+        <p className="text-sm text-gray-500">
+          Useful when you want a seamless transition between content and footer, or when adding your own custom styling.
+        </p>
+      </div>
+    </BottomSheetDemo>
+  ),
+};
+
+export const FooterBorderCustomColor: Story = {
+  render: () => (
+    <BottomSheetDemo
+      footerBorder="#3B82F6"
+      footer={
+        <div className="flex gap-3 pt-4">
+          <button className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">Cancel</button>
+          <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900">Custom Footer Border Color</h2>
+        <p className="text-gray-600">
+          This sheet uses <code>footerBorder="#3B82F6"</code> to set a custom blue border color on the footer.
+        </p>
+        <p className="text-sm text-gray-500">Pass any valid CSS color value to customize the footer border.</p>
       </div>
     </BottomSheetDemo>
   ),

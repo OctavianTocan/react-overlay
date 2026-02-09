@@ -266,6 +266,52 @@ describe("BottomSheet Header Border", () => {
   });
 });
 
+describe("BottomSheet Footer Border", () => {
+  /** Helper to get the footer container element (sibling after data-bottom-sheet-content) */
+  function getFooterContainer(): HTMLElement | null {
+    const contentArea = document.querySelector("[data-bottom-sheet-content]");
+    return (contentArea?.nextElementSibling as HTMLElement) ?? null;
+  }
+
+  it("renders default footer border when footerBorder is not specified", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} footer={<button>Submit</button>}>
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    const footer = getFooterContainer();
+    expect(footer).not.toBeNull();
+    expect(footer!.style.borderTopWidth).toBe("1px");
+    expect(footer!.style.borderTopStyle).toBe("solid");
+  });
+
+  it("hides footer border when footerBorder is false", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} footer={<button>Submit</button>} footerBorder={false}>
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    const footer = getFooterContainer();
+    expect(footer).not.toBeNull();
+    expect(footer!).toHaveStyle({ borderTopWidth: 0 });
+  });
+
+  it("applies custom border color when footerBorder is a string", () => {
+    render(
+      <BottomSheet open={true} onDismiss={() => {}} footer={<button>Submit</button>} footerBorder="#FF0000">
+        <p>Sheet content</p>
+      </BottomSheet>
+    );
+
+    const footer = getFooterContainer();
+    expect(footer).not.toBeNull();
+    expect(footer!).toHaveStyle({ borderTopColor: "rgb(255, 0, 0)" });
+    expect(footer!.style.borderTopWidth).toBe("1px");
+  });
+});
+
 describe("BottomSheet Sticky Header/Footer Collapse", () => {
   it("keeps footer stationary while content collapses during drag", () => {
     render(

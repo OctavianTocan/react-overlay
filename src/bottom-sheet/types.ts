@@ -189,6 +189,22 @@ export interface BottomSheetProps {
    * ```
    */
   headerBorder?: boolean | string;
+  /**
+   * Whether to show the footer border.
+   * - `true` (default): Shows the default border (#E5E5E5)
+   * - `false`: No border
+   * - `string`: Custom border color
+   * @default true
+   * @example Hide border
+   * ```tsx
+   * <BottomSheet footer={<button>Submit</button>} footerBorder={false} ... />
+   * ```
+   * @example Custom border color
+   * ```tsx
+   * <BottomSheet footer={<button>Submit</button>} footerBorder="#FF0000" ... />
+   * ```
+   */
+  footerBorder?: boolean | string;
   /** @deprecated Use header prop instead. Optional title displayed at the top of the sheet */
   title?: string;
 

@@ -450,6 +450,14 @@ function BottomSheetContent({
       if (!touch) return;
 
       const target = e.target as HTMLElement;
+
+      // Scope touch events to THIS sheet instance.
+      // When multiple sheets are open (nested), each registers global touch
+      // listeners. Without this guard, dragging a child sheet handle also
+      // starts dragging the parent, causing both to dismiss.
+      const owningSheet = target.closest("[data-bottom-sheet-root]");
+      if (owningSheet !== sheetElementRef.current) return;
+
       if (target.closest("[data-bottom-sheet-handle]") || target.closest("[data-bottom-sheet-drag-zone]")) {
         handleDragStart(touch.clientY);
       } else if (expandOnContentDrag && target.closest("[data-bottom-sheet-content]")) {
@@ -704,6 +712,7 @@ function BottomSheetContent({
       {/* Sheet */}
       <div
         ref={sheetElementRef}
+        data-bottom-sheet-root
         style={{
           ...styles.sheet,
           ...(unstyledFlags.sheet && { backgroundColor: "transparent" }),

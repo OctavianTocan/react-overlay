@@ -644,3 +644,100 @@ describe("BottomSheet Styling Props", () => {
     });
   });
 });
+
+describe("BottomSheet Nested Sheets", () => {
+  /**
+   * Regression test: when a child sheet is nested inside a parent sheet,
+   * dragging the child handle to dismiss should only close the child.
+   * Previously, both sheets' global touch listeners would process the same
+   * touch sequence, causing both to dismiss.
+   */
+  it("does not dismiss parent when dragging the child handle down", () => {
+    const parentDismiss = vi.fn();
+    const childDismiss = vi.fn();
+
+    /**
+     * Wrapper that renders parent + child BottomSheet.
+     * The child is rendered inside the parent's content area, matching the
+     * real-world pattern (e.g., model selector sheet inside chat sheet).
+     */
+    function NestedSheets() {
+      return (
+        <>
+          <BottomSheet open={true} onDismiss={parentDismiss} testId="parent-sheet">
+            <p>Parent content</p>
+            <BottomSheet open={true} onDismiss={childDismiss} testId="child-sheet">
+              <p>Child content</p>
+            </BottomSheet>
+          </BottomSheet>
+        </>
+      );
+    }
+
+    render(<NestedSheets />);
+    waitForSheetToOpen();
+
+    // There are two sheets, each with their own handle.
+    // The child sheet's handle is the one we want to drag.
+    const allHandles = document.querySelectorAll("[data-bottom-sheet-handle]");
+    expect(allHandles.length).toBeGreaterThanOrEqual(2);
+
+    // The child sheet's handle is the last one in DOM order (portals append to body).
+    const childHandle = allHandles[allHandles.length - 1] as HTMLElement;
+
+    // Simulate a touch drag-down on the child handle (enough to trigger dismiss).
+    // touchstart on child handle
+    fireEvent.touchStart(childHandle, {
+      touches: [{ clientY: 100, identifier: 0 }],
+    });
+
+    // touchmove dragging down significantly
+    fireEvent.touchMove(childHandle, {
+      touches: [{ clientY: 500, identifier: 0 }],
+    });
+
+    // touchend at the dragged position
+    fireEvent.touchEnd(childHandle, {
+      changedTouches: [{ clientY: 500, identifier: 0 }],
+    });
+
+    // Wait for close animation to complete
+    act(() => {
+      vi.advanceTimersByTime(ANIMATION_DURATION_MS + 100);
+    });
+
+    // Parent onDismiss must NOT have been called
+    expect(parentDismiss).not.toHaveBeenCalled();
+  });
+
+  it("parent sheet still dismisses via its own backdrop when child is open", () => {
+    const parentDismiss = vi.fn();
+    const childDismiss = vi.fn();
+
+    function NestedSheets() {
+      return (
+        <>
+          <BottomSheet open={true} onDismiss={parentDismiss} testId="parent-sheet">
+            <p>Parent content</p>
+            <BottomSheet open={true} onDismiss={childDismiss} testId="child-sheet">
+              <p>Child content</p>
+            </BottomSheet>
+          </BottomSheet>
+        </>
+      );
+    }
+
+    render(<NestedSheets />);
+    waitForSheetToOpen();
+
+    // Click the parent backdrop (first one in DOM)
+    const parentBackdrop = screen.getByTestId("parent-sheet-backdrop");
+    fireEvent.click(parentBackdrop);
+
+    act(() => {
+      vi.advanceTimersByTime(ANIMATION_DURATION_MS + 100);
+    });
+
+    expect(parentDismiss).toHaveBeenCalledTimes(1);
+  });
+});

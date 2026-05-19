@@ -117,8 +117,6 @@ export interface BottomSheetProps {
    * ```
    */
   onDismiss?: () => void;
-  /** @deprecated Use onDismiss instead. Callback when the sheet is closed. */
-  onClose?: () => void;
   /** Content to render inside the sheet */
   children: React.ReactNode;
 
@@ -205,8 +203,6 @@ export interface BottomSheetProps {
    * ```
    */
   footerBorder?: boolean | string;
-  /** @deprecated Use header prop instead. Optional title displayed at the top of the sheet */
-  title?: string;
 
   // Dismiss Button
   /**
@@ -312,8 +308,6 @@ export interface BottomSheetProps {
   // Testing
   /** Test ID for testing */
   testId?: string;
-  /** @deprecated Use testId instead */
-  testID?: string;
 
   // Keyboard behavior
   /**

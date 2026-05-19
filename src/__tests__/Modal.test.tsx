@@ -46,19 +46,6 @@ describe("Modal", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
-
-  it("supports legacy isOpen/onClose props", () => {
-    const onClose = vi.fn();
-    render(
-      <Modal isOpen={true} onClose={onClose}>
-        <p>Legacy props</p>
-      </Modal>
-    );
-
-    expect(screen.getByText("Legacy props")).toBeInTheDocument();
-    fireEvent.keyDown(document, { key: "Escape" });
-    expect(onClose).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe("ModalHeader", () => {

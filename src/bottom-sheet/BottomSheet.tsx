@@ -75,7 +75,6 @@ interface BottomSheetContentProps extends BottomSheetProps {
 function BottomSheetContent({
   open,
   onDismiss,
-  onClose,
   children,
   snapPoints: snapPointsProp,
   defaultSnap,
@@ -83,7 +82,6 @@ function BottomSheetContent({
   footer,
   headerBorder = true,
   footerBorder = true,
-  title,
   sibling,
   blocking = true,
   scrollLocking = true,
@@ -104,15 +102,12 @@ function BottomSheetContent({
   onSpringEnd,
   onSpringCancel: _onSpringCancel,
   testId,
-  testID,
   sheetRef,
   keyboardBehavior = "ignore",
   keyboardSnapPoint = 0,
   dismissButton,
   stickyHeader,
 }: BottomSheetContentProps): React.JSX.Element | null {
-  // Support both testId (new) and testID (deprecated) with testId taking precedence
-  const resolvedTestId = testId ?? testID;
   // ========== State ==========
   const [isVisible, setIsVisible] = useState(false);
   const [windowHeight, setWindowHeight] = useState(typeof window !== "undefined" ? window.innerHeight : 800);
@@ -202,12 +197,8 @@ function BottomSheetContent({
 
   // ========== Dismiss Handler ==========
   const handleDismiss = useCallback(() => {
-    if (onDismiss) {
-      onDismiss();
-    } else {
-      onClose?.();
-    }
-  }, [onDismiss, onClose]);
+    onDismiss?.();
+  }, [onDismiss]);
 
   // ========== Animation Helpers ==========
   const setHeightImmediate = useCallback((height: number) => {
@@ -673,13 +664,7 @@ function BottomSheetContent({
   if (!isVisible) return null;
 
   // ========== Render ==========
-  const headerContent =
-    header ??
-    (title ? (
-      <div style={styles.legacyHeader}>
-        <h2 style={styles.title}>{title}</h2>
-      </div>
-    ) : null);
+  const headerContent = header ?? null;
 
   const overlayStyle: React.CSSProperties = {
     ...styles.overlay,
@@ -688,7 +673,7 @@ function BottomSheetContent({
   };
 
   return (
-    <div style={overlayStyle} className={className} data-testid={resolvedTestId}>
+    <div style={overlayStyle} className={className} data-testid={testId}>
       {sibling}
 
       {/* Backdrop */}
@@ -704,8 +689,8 @@ function BottomSheetContent({
           type="button"
           style={styles.backdropButton}
           onClick={() => animateClose("custom")}
-          aria-label={title ? `Close ${title}` : "Close bottom sheet"}
-          data-testid={resolvedTestId ? `${resolvedTestId}-backdrop` : undefined}
+          aria-label="Close bottom sheet"
+          data-testid={testId ? `${testId}-backdrop` : undefined}
         />
       </div>
 
@@ -746,7 +731,7 @@ function BottomSheetContent({
             style={unstyledFlags.handle ? { ...styles.handleArea, height: "auto" } : styles.handleArea}
             data-bottom-sheet-handle
             role="button"
-            aria-label={title ? `Drag handle for ${title}` : "Drag handle"}
+            aria-label="Drag handle"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -916,15 +901,6 @@ const styles: Record<string, React.CSSProperties> = {
     borderBottomWidth: "1px",
     borderBottomStyle: "solid",
     borderBottomColor: COLORS.border.subtle,
-  },
-  legacyHeader: {
-    paddingBottom: `${SPACING.sm}px`,
-  },
-  title: {
-    fontSize: "18px",
-    fontWeight: 600,
-    color: COLORS.text.primary,
-    margin: 0,
   },
   scrollView: {
     flex: 1,

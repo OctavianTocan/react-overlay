@@ -36,8 +36,6 @@ import type { ModalWrapperProps } from "./types";
 export function ModalWrapper({
   open,
   onDismiss,
-  isOpen,
-  onClose,
   children,
   contentClassName,
   overlayClassName,
@@ -51,9 +49,8 @@ export function ModalWrapper({
   ariaDescribedBy,
   ariaLabel,
 }: ModalWrapperProps) {
-  // Support both new (open/onDismiss) and deprecated (isOpen/onClose) props
-  const resolvedOpen = open ?? isOpen ?? false;
-  const resolvedOnDismiss = useMemo(() => onDismiss ?? onClose ?? (() => {}), [onDismiss, onClose]);
+  const resolvedOpen = open ?? false;
+  const resolvedOnDismiss = useMemo(() => onDismiss ?? (() => {}), [onDismiss]);
 
   // Centralized body scroll lock (ref-counted, preserves scrollbar gutter).
   useBodyScrollLock(resolvedOpen);

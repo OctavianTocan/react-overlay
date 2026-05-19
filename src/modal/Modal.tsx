@@ -49,8 +49,6 @@ const sizeClasses: Record<ModalSize, string> = {
 export function Modal({
   open,
   onDismiss,
-  isOpen,
-  onClose,
   children,
   size = "md",
   className,
@@ -71,8 +69,6 @@ export function Modal({
     <ModalWrapper
       open={open}
       onDismiss={onDismiss}
-      isOpen={isOpen}
-      onClose={onClose}
       contentClassName={contentClassName}
       overlayClassName={overlayClassName}
       closeOnOverlayClick={closeOnOverlayClick}

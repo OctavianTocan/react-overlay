@@ -78,26 +78,6 @@ describe("BottomSheet", () => {
     });
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
-
-  it("supports legacy onClose prop", () => {
-    const onClose = vi.fn();
-    render(
-      <BottomSheet open={true} onClose={onClose}>
-        <p>Legacy onClose prop</p>
-      </BottomSheet>
-    );
-
-    expect(screen.getByText("Legacy onClose prop")).toBeInTheDocument();
-
-    // Wait for open animation to complete
-    waitForSheetToOpen();
-
-    fireEvent.keyDown(document, { key: "Escape" });
-    act(() => {
-      vi.advanceTimersByTime(ANIMATION_DURATION_MS);
-    });
-    expect(onClose).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe("BottomSheet Dismiss Button", () => {

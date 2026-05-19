@@ -8,9 +8,6 @@ import type { DismissButtonProps } from "./DismissButton";
 /**
  * Props for the low-level ModalWrapper component.
  *
- * Supports both new API (open/onDismiss) and legacy API (isOpen/onClose).
- * Components resolve these at runtime for backward compatibility.
- *
  * @example Basic usage
  * ```tsx
  * import { ModalWrapper } from '@octavian-tocan/react-overlay';
@@ -27,7 +24,7 @@ import type { DismissButtonProps } from "./DismissButton";
  */
 export interface ModalWrapperProps {
   /**
-   * Whether the modal is open (preferred)
+   * Whether the modal is open
    * @example
    * ```tsx
    * const [open, setOpen] = useState(false);
@@ -36,17 +33,13 @@ export interface ModalWrapperProps {
    */
   open?: boolean;
   /**
-   * Callback when modal should close (preferred)
+   * Callback when modal should close
    * @example
    * ```tsx
    * <ModalWrapper onDismiss={() => setOpen(false)} ... />
    * ```
    */
   onDismiss?: () => void;
-  /** @deprecated Use open instead */
-  isOpen?: boolean;
-  /** @deprecated Use onDismiss instead */
-  onClose?: () => void;
   /** Modal content */
   children: ReactNode;
   /**
@@ -84,8 +77,6 @@ export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
 
 /**
  * Props for the high-level Modal component.
- *
- * Supports both new API (open/onDismiss) and legacy API (isOpen/onClose).
  *
  * @example Basic usage
  * ```tsx

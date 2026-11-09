@@ -897,7 +897,7 @@ export const GradientBackground: Story = {
       <div className="text-white text-center">
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-2">Sign in to continue</h2>
-          <p className="text-sky-100">Create an account to chat with TwinMind</p>
+          <p className="text-sky-100">Create an account to keep chatting</p>
         </div>
         <div className="flex justify-center gap-3 mb-8">
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">🤖</div>

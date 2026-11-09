@@ -5,6 +5,10 @@ Unified overlay components for React: BottomSheet with snap points and Modal wit
 [![npm version](https://img.shields.io/npm/v/@octavian-tocan/react-overlay.svg)](https://www.npmjs.com/package/@octavian-tocan/react-overlay)
 [![license](https://img.shields.io/npm/l/@octavian-tocan/react-overlay.svg)](https://github.com/OctavianTocan/react-overlay/blob/main/LICENSE)
 
+<p align="center">
+  <img src="./docs/media/react-overlay.gif" width="360" alt="A bottom sheet opens and snaps between three heights as its handle is dragged down, then closes with a swipe. Then a confirm delete modal animates open and closes with Cancel.">
+</p>
+
 ## Installation
 
 ```bash
